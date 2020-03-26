@@ -1,0 +1,14 @@
+.wrapper {
+    width: 100%;
+}
+
+.make-report {
+    display: flex;
+    justify-content: space-between;
+    max-width: 300px;
+    margin: 20vh auto 0 auto;
+}
+
+.dates {
+    /*display: flex;*/
+}

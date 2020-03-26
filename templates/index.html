@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Парсер</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css')}}">
+</head>
+<body>
+    <div class="wrapper">
+        <form class="make-report" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="a" value="1">
+            <input type="file" name="file">
+            <input type="submit" value="Спарсить">
+        </form>
+    </div>
+</body>
+</html>
