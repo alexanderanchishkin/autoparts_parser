@@ -65,7 +65,7 @@ class Parser:
 
         parts_chunks = [parts[i:i + min(len(parts), self.BUFFER_SIZE)] for i in range(0, len(parts), self.BUFFER_SIZE)]
         for parts_chunk in parts_chunks:
-            if not settings.is_running:
+            if settings.is_terminating:
                 print('Terminating...')
                 break
 
@@ -77,7 +77,7 @@ class Parser:
             ready_parts = {part.number: part for part in ready_parts_array}
             print('Saving...')
 
-            if not settings.is_running:
+            if settings.is_terminating:
                 print('Terminating...')
                 break
             self.save_result(ready_parts)

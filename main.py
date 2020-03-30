@@ -26,11 +26,15 @@ p = None
 @app.route('/', methods=['GET'])
 def index():
     is_running = settings.is_running
+    is_terminating = settings.is_terminating
+    working_file = settings.working_file
     progress_bar = calculate_progress()
     link = '/results/'
     reports = get_reports()
 
-    return render_template('index.html', link=link, reports=reports, is_running=is_running, progress_bar=progress_bar)
+    return render_template('index.html', link=link, reports=reports,
+                           is_running=is_running, progress_bar=progress_bar,
+                           is_terminating=is_terminating, working_file=working_file)
 
 
 @app.route('/', methods=['POST'])
@@ -38,7 +42,7 @@ def make():
     global p
 
     if request.form.get('stop_button'):
-        settings.is_running = False
+        settings.is_terminating = True
         return redirect('/')
 
     folder = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
@@ -90,6 +94,7 @@ def run_process(xlsx_name, filename, process='parse'):
     try:
         print('start process')
         settings.progress_list = []
+        settings.working_file = filename
         settings.is_running = True
 
         if process == 'parse':
@@ -102,6 +107,7 @@ def run_process(xlsx_name, filename, process='parse'):
     finally:
         print('finish process')
         settings.is_running = False
+        settings.is_terminating = False
 
 
 def calculate_progress():
