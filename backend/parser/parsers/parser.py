@@ -65,6 +65,10 @@ class Parser:
 
         parts_chunks = [parts[i:i + min(len(parts), self.BUFFER_SIZE)] for i in range(0, len(parts), self.BUFFER_SIZE)]
         for parts_chunk in parts_chunks:
+            if not settings.is_running:
+                print('Terminating...')
+                break
+
             if self.MULTI_REQUEST:
                 p = ThreadPool(self.THREADS_COUNT)
                 ready_parts_array = list(p.map(self.find_one_part, parts_chunk))

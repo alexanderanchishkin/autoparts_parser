@@ -11,24 +11,30 @@
         <form class="make-report" method="post" enctype="multipart/form-data">
             <input type="hidden" name="a" value="1">
             {% if not is_running %}
-                <input type="file"
-                       name="file"
-                >
-                <input type="submit"
-                       name="parse_button"
-                       value="Спарсить"
-                >
-                <input type="submit"
-                       name="parse_button"
-                       value="Добавить в базу"
-                >
-                <input type="submit"
-                       name="parse_button"
-                       value="Получить отчёт за неделю"
-                >
+                <div class="options">
+                    <input type="file"
+                           name="file"
+                    >
+                    <label class="checkbox-label"><input type="checkbox" name="add_checkbox" value="add" disabled>Добавить в базу</label>
+                    <label class="checkbox-label"><input type="checkbox" name="parse_checkbox" value="parse" checked>Спарсить</label>
+                </div>
+                <br>
+                <div class="buttons">
+                    <input type="submit"
+                           name="run_button"
+                           value="Запустить"
+                    >
+                    <input type="submit"
+                           name="report_button"
+                           value="Получить отчёт за неделю"
+                           disabled
+                    >
+                </div>
             {% else %}
                 {% if progress_bar < 100 %}
-                    <input type="submit" name="stop_button" value="Остановить">
+                    <div class="buttons">
+                        <input type="submit" name="stop_button" value="Остановить">
+                    </div>
                 {% endif %}
             {% endif %}
         </form>

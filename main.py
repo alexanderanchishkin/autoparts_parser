@@ -59,6 +59,10 @@ def make():
         os.makedirs(temp_folder)
 
     f = request.files['file']
+
+    if not f:
+        return redirect('/')
+
     filename = f.filename
     f.save(os.path.join(folder, filename))
 
@@ -66,8 +70,13 @@ def make():
         return redirect('/')
 
     xlsx_name = os.path.join(os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER']), filename)
-    p = DummyProcess(target=run_process, args=(xlsx_name, filename))
-    p.start()
+
+    if request.form.get('add_checkbox'):
+        DummyProcess(target=run_process, args=(xlsx_name, filename, 'add')).start()
+
+    if request.form.get('parse_checkbox'):
+        p = DummyProcess(target=run_process, args=(xlsx_name, filename))
+        p.start()
 
     return redirect('/')
 
@@ -77,12 +86,17 @@ def download_report(path):
     return send_from_directory('results', path)
 
 
-def run_process(xlsx_name, filename):
+def run_process(xlsx_name, filename, process='parse'):
     try:
         print('start process')
         settings.progress_list = []
         settings.is_running = True
-        return parse(xlsx_name, filename)
+
+        if process == 'parse':
+            return parse(xlsx_name, filename)
+        if process == 'add':
+            return 'ok'
+        return 'Nothing'
     except:
         return 'error'
     finally:
