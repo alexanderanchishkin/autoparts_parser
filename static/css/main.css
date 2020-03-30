@@ -1,12 +1,50 @@
 .wrapper {
-    width: 100%;
+    margin: 20vh auto 0 auto;
+    border: 1px solid black;
+    padding: 10px;
+    width: 600px;
 }
 
 .make-report {
+    /*display: flex;*/
+    /*justify-content: space-between;*/
+}
+
+input {
+    margin: 0 10px;
+}
+
+input[type='file'] {
+    width: 200px;
+}
+
+.checkbox-label {
+    min-width: 140px;
+}
+
+.block {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.options {
     display: flex;
     justify-content: space-between;
-    max-width: 300px;
-    margin: 20vh auto 0 auto;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.results-block {
+    text-align: center;
+}
+
+li {
+    list-style: none;
+    padding-top: 10px;
 }
 
 .dates {

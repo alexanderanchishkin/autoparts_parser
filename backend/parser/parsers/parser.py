@@ -26,7 +26,8 @@ class Parser:
     MULTI_REQUEST = False
     THREADS_COUNT = 0
 
-    def __init__(self):
+    def __init__(self, parser_id=0):
+        self.id = parser_id
         self.current_proxies = None
         self.proxy_index = 0
         with open('proxies.txt', 'r') as f:
@@ -64,6 +65,10 @@ class Parser:
 
         parts_chunks = [parts[i:i + min(len(parts), self.BUFFER_SIZE)] for i in range(0, len(parts), self.BUFFER_SIZE)]
         for parts_chunk in parts_chunks:
+            if not settings.is_running:
+                print('Terminating...')
+                break
+
             if self.MULTI_REQUEST:
                 p = ThreadPool(self.THREADS_COUNT)
                 ready_parts_array = list(p.map(self.find_one_part, parts_chunk))
@@ -71,10 +76,14 @@ class Parser:
                 ready_parts_array = [self.find_one_part(part) for part in parts_chunk]
             ready_parts = {part.number: part for part in ready_parts_array}
             print('Saving...')
+
+            if not settings.is_running:
+                print('Terminating...')
+                break
             self.save_result(ready_parts)
 
         print('time:', time.time() - start_time)
-        return ready_parts
+        return True
 
     def find_one_part(self, part):
         try:
@@ -95,6 +104,7 @@ class Parser:
             return Part(part.number, part.model, part.model, '')
         finally:
             self.done += 1
+            settings.progress_list[self.id] = self.done / self.amount
             if not settings.DEBUG:
                 print(f"{self.__class__.__name__}: {self.done}\\{self.amount}\n", end='')
 

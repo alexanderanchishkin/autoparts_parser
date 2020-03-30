@@ -17,14 +17,16 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 def parse(xlsx_name, filename):
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    settings.TIME_MOMENT = datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+    settings.TIME_MOMENT = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
     input_xlsx = xlsx_name
 
     parts = read_parts_from_xlsx(input_xlsx)
     print(f'founded {len(parts)} parts.')
 
-    parsers = [AvdMotors(), Froza(), AutoPiter()]
+    parsers = [AvdMotors(0), Froza(1), AutoPiter(2)]
+    settings.progress_list = [0] * len(parsers)
+
     p = ThreadPool(3)
     ready_parts_array = list(p.map(lambda par: par.find_parts(parts), parsers))
 

@@ -82,6 +82,7 @@ class AutoPiter(Parser):
             return Part(part.number, part.model, part.model, '')
         finally:
             self.done += 1
+            settings.progress_list[self.id] = self.done / self.amount
             time.sleep(max(self.DELAY - (time.time() - start_time), 0))
             if self.proxy_index == 0:
                 AutoPiter.ALL_SLEEP = True
