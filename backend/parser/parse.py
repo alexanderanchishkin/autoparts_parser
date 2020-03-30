@@ -17,7 +17,8 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 def parse(xlsx_name, filename):
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    settings.TIME_MOMENT = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    settings.TIME_MOMENT = datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+    settings.TIME_MOMENT_NAME = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
     input_xlsx = xlsx_name
 

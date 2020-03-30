@@ -42,6 +42,12 @@ input[type='file'] {
     text-align: center;
 }
 
+ul {
+    width: 300px;
+    margin: 0 auto;
+    text-align: left;
+}
+
 li {
     list-style: none;
     padding-top: 10px;

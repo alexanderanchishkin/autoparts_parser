@@ -2,6 +2,7 @@ DEBUG = 0
 VERBOSE = 0
 
 TIME_MOMENT = None
+TIME_MOMENT_NAME = None
 OUTPUT_DIRECTORY = 'results/tmp/'
 
 screen = None
