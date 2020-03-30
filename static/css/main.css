@@ -5,8 +5,27 @@
 .make-report {
     display: flex;
     justify-content: space-between;
-    max-width: 300px;
+    max-width: 600px;
     margin: 20vh auto 0 auto;
+}
+
+input {
+    padding: 0 10px;
+    margin: 0 auto;
+}
+
+.block {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.results-block {
+    text-align: center;
+}
+
+li {
+    list-style: none;
+    padding-top: 10px;
 }
 
 .dates {

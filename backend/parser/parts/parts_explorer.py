@@ -115,8 +115,9 @@ def get_column_by_index(index):  # col is 1 based
 def merge_files(files, out_name):
     wb = Workbook()
     folder = 'results'
+    temp_folder = os.path.join(folder, 'tmp')
     for file in files:
-        filename = os.path.join(folder, file)
+        filename = os.path.join(temp_folder, file)
         file_wb = load_workbook(filename)
         file_ws = file_wb.active
         wb.create_sheet(file_ws.title)

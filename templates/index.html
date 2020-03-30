@@ -3,15 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <title>Парсер</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body>
-    <div class="wrapper">
+<div class="wrapper">
+    <section class="tasks-block block">
         <form class="make-report" method="post" enctype="multipart/form-data">
             <input type="hidden" name="a" value="1">
-            <input type="file" name="file">
-            <input type="submit" value="Спарсить">
+            {% if not is_running %}
+                <input type="file"
+                       name="file"
+                >
+                <input type="submit"
+                       name="parse_button"
+                       value="Спарсить"
+                >
+                <input type="submit"
+                       name="parse_button"
+                       value="Добавить в базу"
+                >
+                <input type="submit"
+                       name="parse_button"
+                       value="Получить отчёт за неделю"
+                >
+            {% else %}
+                {% if progress_bar < 100 %}
+                    <input type="submit" name="stop_button" value="Остановить">
+                {% endif %}
+            {% endif %}
         </form>
-    </div>
+    </section>
+    <section class="results-block block">
+        <h2>Результаты</h2>
+        <ul>
+            {% if is_running %}
+                {% if progress_bar < 100 %}
+                    Выполняется работа...{{ progress_bar }}%
+                {% else %}
+                    Сохранение файла...
+                {% endif %}
+            {% endif %}
+            {% for report in reports %}
+                <li><a href="{{ link }}{{ report }}">{{ report }}</a></li>
+            {% endfor %}
+        </ul>
+    </section>
+</div>
 </body>
 </html>

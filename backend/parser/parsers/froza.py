@@ -49,6 +49,7 @@ class Froza(Parser):
             return Part(part.number, part.model, part.model, '')
         finally:
             self.done += 1
+            settings.progress_list[self.id] = self.done / self.amount
             # time.sleep(max(30 - (time.time() - start_time), 0))
 
     def get_outside_part_html(self, part):
