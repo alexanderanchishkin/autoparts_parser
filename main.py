@@ -1,4 +1,7 @@
 import os
+import time
+import traceback
+
 import settings
 import shutil
 import stat
@@ -92,23 +95,26 @@ def download_report(path):
 
 def run_process(xlsx_name, filename, process='parse'):
     try:
-        print('start process')
+        print(f'start process {process}')
         settings.progress_list = []
         settings.working_file = filename
-        if process != 'add':
-            settings.is_running = True
 
-        if process == 'parse':
-            return parse(xlsx_name, filename)
+        while settings.is_running:
+            time.sleep(1)
+
+        settings.is_running = True
+
         if process == 'add':
             return add(xlsx_name, filename)
+        if process == 'parse':
+            return parse(xlsx_name, filename)
         return 'Nothing'
-    except:
+    except Exception:
+        print('Произошла ошибка: ', traceback.print_exc())
         return 'error'
     finally:
         print('finish process')
-        if process != 'add':
-            settings.is_running = False
+        settings.is_running = False
         settings.is_terminating = False
 
 

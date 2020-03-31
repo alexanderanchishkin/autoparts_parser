@@ -6,6 +6,7 @@ import traceback
 
 from backend.parser.parts.part import Part
 from backend.parser.parts.parts_explorer import write_parts_to_xlsx, write_column_to_xlsx
+from backend.parser.parts.parts_database import write_parts
 
 from multiprocessing.dummy import Pool as ThreadPool
 
@@ -26,7 +27,10 @@ class Parser:
     MULTI_REQUEST = False
     THREADS_COUNT = 0
 
-    def __init__(self, parser_id=0):
+    def __init__(self, parser_id=0, sql_mode=False, table_prefix=None):
+        self.table_prefix = table_prefix
+        self.table_name = table_prefix + self.OUTPUT_FILE.split('.')[0]
+        self.sql_mode = sql_mode
         self.id = parser_id
         self.current_proxies = None
         self.proxy_index = 0
@@ -80,6 +84,7 @@ class Parser:
             if settings.is_terminating:
                 print('Terminating...')
                 break
+
             self.save_result(ready_parts)
 
         print('time:', time.time() - start_time)
@@ -127,7 +132,12 @@ class Parser:
     def save_result(self, ready_parts):
         if settings.DEBUG:
             print(f'{self.__class__.__name__}: Начинаем запись в таблицу')
-        write_parts_to_xlsx(self.OUTPUT_FILE, self.OUTPUT_TABLE, ready_parts, settings.TIME_MOMENT)
+
+        if self.sql_mode:
+            write_parts(self.table_name, ready_parts)
+        else:
+            write_parts_to_xlsx(self.OUTPUT_FILE, self.OUTPUT_TABLE, ready_parts, settings.TIME_MOMENT)
+
         if settings.DEBUG:
             print(f'{self.__class__.__name__}: Детали сохранены')
 
