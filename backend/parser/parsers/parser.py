@@ -135,8 +135,7 @@ class Parser:
 
         if self.sql_mode:
             write_parts(self.table_name, ready_parts)
-        else:
-            write_parts_to_xlsx(self.OUTPUT_FILE, self.OUTPUT_TABLE, ready_parts, settings.TIME_MOMENT)
+        write_parts_to_xlsx(self.OUTPUT_FILE, self.OUTPUT_TABLE, ready_parts, settings.TIME_MOMENT)
 
         if settings.DEBUG:
             print(f'{self.__class__.__name__}: Детали сохранены')
