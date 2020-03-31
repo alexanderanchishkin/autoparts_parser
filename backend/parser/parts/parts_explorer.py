@@ -123,7 +123,7 @@ def merge_files(files, out_name):
         wb.create_sheet(file_ws.title)
         for row in file_ws.rows:
             wb[file_ws.title].append((ceil.value for ceil in row))
-    output_filename = f"{settings.TIME_MOMENT.replace(' ', '').replace('.', '').replace(':', '')}_{out_name}.xlsx"
+    output_filename = f"{settings.TIME_MOMENT_NAME}_{out_name}.xlsx"
     output_path = os.path.join(folder, output_filename)
     print(output_path)
     print(output_filename)

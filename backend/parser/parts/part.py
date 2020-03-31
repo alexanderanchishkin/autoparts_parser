@@ -2,7 +2,8 @@ from settings import *
 
 
 class Part:
-    def __init__(self, number, model, title=None, price=None):
+    def __init__(self, number, model, title=None, price=None, article_id=0):
+        self.article_id = article_id
         self.number = number
         self.model = model
         self.title = title
