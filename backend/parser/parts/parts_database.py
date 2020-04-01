@@ -15,7 +15,7 @@ class Article(peewee.Model):
 
 
 def add_parts(parts):
-    articles = [{'article': part.number.upper(), 'brand': part.model.upper()} for part in parts]
+    articles = [{'article': part.number.upper(), 'brand': part.model.upper()} for part in parts if part.number and part.model]
     Article.insert_many(articles).on_conflict_ignore().execute()
 
 
@@ -30,14 +30,27 @@ def create_table(table_prefix, parser):
     return table_name
 
 
+def float_try_parse(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+
 def write_parts(table_name, parts):
-    [write_part(table_name, part) for article, part in parts.items() if float(part.price) > 0]
+    [write_part(table_name, part) for article, part in parts.items() if float_try_parse(part.price)
+     and float(part.price) > 0]
 
 
 # noinspection SqlResolve
 def write_part(table_name, part):
     key = (part.number + part.model).upper()
     article_id = settings.articles_dict.get(key)
+    if not article_id:
+        print('Not found: ')
+        print(part)
+        return False
     query = f"INSERT INTO {table_name} (`article_id`, `price`) VALUES ({article_id}, {part.price})"
     db.execute_sql(query)
     return True

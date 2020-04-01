@@ -27,15 +27,6 @@ class Froza(Parser):
             html = self.get_part_html(part)
             ready_part = self.parse_html(html, part)
 
-            outside_html = self.get_outside_part_html(part)
-            ready_outside_part = self.parse_outside_html(outside_html, part)
-
-            try:
-                if ready_outside_part and float(ready_outside_part.price) < float(ready_part.price):
-                    ready_part = ready_outside_part
-            except Exception:
-                pass
-
             if settings.DEBUG:
                 print(ready_part)
                 print('end finding')
@@ -46,26 +37,11 @@ class Froza(Parser):
         except Exception as e:
             print('Произошла ошибка: ', traceback.print_exc())
             print('Деталь: ', part)
-            return Part(part.number, part.model, part.model, '')
+            return Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
         finally:
             self.done += 1
             settings.progress_list[self.id] = self.done / self.amount
             # time.sleep(max(30 - (time.time() - start_time), 0))
-
-    def get_outside_part_html(self, part):
-        url = f'https://www.froza.ru/index.php/search/outside.json?' \
-              f'multi=1&detail_num={part.number}&make_name={part.model}' \
-              f'&country=10&region_id=0&discount_id=258&sort=sortByPrice&add_warehouse='
-        while True:
-            try:
-                proxies = self.get_next_proxies()
-                r = requests.get(url, proxies=proxies, timeout=15)
-                break
-            except:
-                print('timeout')
-                pass
-
-        return r.text
 
     def get_part_html(self, part):
         url = f'https://www.froza.ru/index.php/search/original.json?' \
@@ -88,35 +64,27 @@ class Froza(Parser):
         json_response = json.loads(html)
         block = json_response['data']
         if not block:
-            return Part(part.number, part.model, part.title, 'Нет в наличии')
+            return Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
 
         for inner_block in block.values():
             return self.parse_part_from_block_model(inner_block, part)
 
-        return Part(part.number, part.model, part.title, 'Нет в наличии')
-
-    def parse_outside_html(self, html, part):
-        json_response = json.loads(html)
-        block = json_response['data']
-        if not block:
-            return False
-
-        for model in block.keys():
-            if not self.check_model(part.model, model):
-                continue
-
-            return self.parse_part_from_block_model(block[model], part)
-        return False
+        return Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
 
     def parse_part_from_block_model(self, block_model, part):
-        for array in block_model.values():
-            inner = array[0]
-            if len(inner) < 4:
-                print(block_model)
-            number = inner[3]
-            title = inner[4]
-            price = str(inner[16]).replace(',', '.')
+        stores = list(block_model.values())[0]
+        if len(stores) == 0:
+            return Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
+        if len(stores) == 1:
+            inner = stores[0]
+        else:
+            inner = stores[1]
 
-            ready_part = Part(number, part.model, title, price)
-            return ready_part
-        return None
+        if len(inner) < 4:
+            print(block_model)
+        number = inner[3]
+        title = inner[4]
+        price = str(inner[16]).replace(',', '.')
+
+        ready_part = Part(number, part.model, title, price)
+        return ready_part

@@ -106,7 +106,7 @@ class Parser:
         except Exception:
             print('Произошла ошибка: ', traceback.print_exc())
             print('Деталь: ', part)
-            return Part(part.number, part.model, part.model, '')
+            return Part(part.number, part.model, part.model, 'Нет в наличии')
         finally:
             self.done += 1
             settings.progress_list[self.id] = self.done / self.amount
@@ -133,9 +133,16 @@ class Parser:
         if settings.DEBUG:
             print(f'{self.__class__.__name__}: Начинаем запись в таблицу')
 
-        if self.sql_mode:
-            write_parts(self.table_name, ready_parts)
-        write_parts_to_xlsx(self.OUTPUT_FILE, self.OUTPUT_TABLE, ready_parts, settings.TIME_MOMENT)
+        try:
+            if self.sql_mode:
+                write_parts(self.table_name, ready_parts)
+        except:
+            traceback.print_exc()
+
+        try:
+            write_parts_to_xlsx(self.OUTPUT_FILE, self.OUTPUT_TABLE, ready_parts, settings.TIME_MOMENT)
+        except:
+            traceback.print_exc()
 
         if settings.DEBUG:
             print(f'{self.__class__.__name__}: Детали сохранены')
