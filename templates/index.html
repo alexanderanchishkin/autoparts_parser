@@ -15,18 +15,28 @@
                     <input type="file"
                            name="file"
                     >
-                    <label class="checkbox-label"><input type="checkbox" name="add_checkbox" value="add" checked>Добавить в базу</label>
+                    <label class="checkbox-label"><input type="checkbox" name="add_checkbox" value="add" checked>Добавить
+                        в базу</label>
                     <label class="checkbox-label"><input type="checkbox" name="parse_checkbox" value="parse" checked>Спарсить</label>
-                </div>
-                <br>
-                <div class="buttons">
                     <input type="submit"
                            name="run_button"
                            value="Запустить"
                     >
+                </div>
+                <br>
+                <div class="buttons">
+                    <label>С <input type="date"
+                           name="start_date"
+                                    value="{{ default_start_date }}"
+                    ></label>
+                    <label>По
+                    <input type="date"
+                           name="end_date"
+                           value="{{ default_end_date }}"
+                   ></label>
                     <input type="submit"
                            name="report_button"
-                           value="Получить отчёт за неделю"
+                           value="Получить отчёт за период"
                     >
                 </div>
             {% else %}
@@ -36,7 +46,7 @@
                         <input type="submit"
                                name="stop_button"
                                value="Остановить"
-                               {% if is_terminating %} disabled {% endif %}
+                                {% if is_terminating %} disabled {% endif %}
                         >
                     </div>
                 {% endif %}
@@ -55,7 +65,7 @@
                     Сохранение файла...
                 {% endif %}
                 {% if is_terminating %}
-                     (Остановка)
+                    (Остановка)
                 {% endif %}
             {% endif %}
             {% for report in reports %}

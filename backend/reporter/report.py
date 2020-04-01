@@ -15,7 +15,8 @@ def report(start_date, end_date):
     [one_statistics.update({'article': articles[part_id][0], 'brand': articles[part_id][1]})
      for part_id, one_statistics in statistics.items()]
 
-    write_report(statistics, 'Отчёт')
+    out_name = f"Отчёт_{start_date.replace('-', '')}_{start_date.replace('-', '')}"
+    write_report(statistics, out_name)
 
 
 def full_statistics(array):

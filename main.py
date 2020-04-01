@@ -1,3 +1,4 @@
+import datetime
 import os
 import time
 import traceback
@@ -35,8 +36,11 @@ def index():
     progress_bar = calculate_progress()
     link = '/results/'
     reports = get_reports()
+    default_start_date = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
+    default_end_date = datetime.datetime.now().strftime("%Y-%m-%d")
 
     return render_template('index.html', link=link, reports=reports,
+                           default_start_date=default_start_date, default_end_date=default_end_date,
                            is_running=is_running, progress_bar=progress_bar,
                            is_terminating=is_terminating, working_file=working_file)
 
@@ -50,9 +54,10 @@ def make():
         return redirect('/')
 
     if request.form.get('report_button'):
-        start_date = '2020-04-01'
-        end_date = '2020-04-01'
-        run_process(None, None, 'report', start_date, end_date)
+        start_date = request.form.get('start_date')
+        end_date = request.form.get('end_date')
+        if start_date and end_date:
+            run_process(None, None, 'report', start_date, end_date)
         return redirect('/')
 
     folder = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
