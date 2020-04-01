@@ -46,9 +46,6 @@ class Mparts(Parser):
             soup = BeautifulSoup(html, 'html.parser')
             min_title = soup.select_one('td.fn')['title']
             min_price_str = soup.select('td.price')[1].get_text()
-            if 'от' in min_price_str:
-                print(min_price_str)
-                print(re.sub('[^\.0-9]', '', min_price_str))
             min_price = re.sub('[^\.0-9]', '', min_price_str)
             ready_part = Part(part.number, part.model, min_title, min_price)
         except:

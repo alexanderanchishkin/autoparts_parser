@@ -72,7 +72,7 @@ class AvdMotors(Parser):
             min_price2 = prices[1]['price']
             min_title2 = prices[1].get('item_name', part.number)
         else:
-            min_price2 = int(1e+8)
+            min_price2 = int(1e+6)
             min_title2 = min_title
 
         try:
@@ -110,7 +110,7 @@ class AvdMotors(Parser):
         except:
             pass
 
-        if min_price2 == int(1e+8):
+        if min_price2 > int(1e+6) - 1:
             min_price2 = min_price
 
         ready_part = Part(part.number, part.model, min_title2, min_price2)

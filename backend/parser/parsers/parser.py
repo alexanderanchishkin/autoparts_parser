@@ -106,7 +106,7 @@ class Parser:
         except Exception:
             print('Произошла ошибка: ', traceback.print_exc())
             print('Деталь: ', part)
-            return Part(part.number, part.model, part.model, '')
+            return Part(part.number, part.model, part.model, 'Нет в наличии')
         finally:
             self.done += 1
             settings.progress_list[self.id] = self.done / self.amount

@@ -33,7 +33,7 @@ def run_process(xlsx_name, filename, process='parse', start_date='', end_date=''
 
         settings.is_running = True
 
-        # add(xlsx_name, filename)
+        add(xlsx_name, filename)
         if process == 'parse':
             return parse(xlsx_name, filename)
         return 'Nothing'

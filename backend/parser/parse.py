@@ -8,6 +8,7 @@ from backend.parser.parsers.autopiter import AutoPiter
 from backend.parser.parsers.avd_motors import AvdMotors
 from backend.parser.parsers.froza import Froza
 from backend.parser.parsers.mparts import Mparts
+from backend.parser.parsers.parterra import Parterra
 
 from backend.parser.parts.parts_explorer import read_parts_from_xlsx, merge_files
 from backend.parser.parts.parts_database import create_tables, get_all_parts
@@ -35,12 +36,13 @@ def parse(xlsx_name, filename, sql_mode=False):
         parts = read_parts_from_xlsx(input_xlsx)
     print(f'founded {len(parts)} parts.')
 
-    # parsers = [AvdMotors(0, sql_mode=True, table_prefix=time_moment_db_table_prefix),
-    #            Froza(1, sql_mode=True, table_prefix=time_moment_db_table_prefix),
-    #            AutoPiter(2, sql_mode=True, table_prefix=time_moment_db_table_prefix),
-    #            Mparts(3, sql_mode=True, table_prefix=time_moment_db_table_prefix)]
+    parsers = [AvdMotors(0, sql_mode=True, table_prefix=time_moment_db_table_prefix),
+               Froza(1, sql_mode=True, table_prefix=time_moment_db_table_prefix),
+               AutoPiter(2, sql_mode=True, table_prefix=time_moment_db_table_prefix),
+               Mparts(3, sql_mode=True, table_prefix=time_moment_db_table_prefix),
+               Parterra(4, sql_mode=True, table_prefix=time_moment_db_table_prefix)]
 
-    parsers = [Froza(0, sql_mode=True, table_prefix=time_moment_db_table_prefix)]
+    # parsers = [Parterra(0, sql_mode=True, table_prefix=time_moment_db_table_prefix)]
 
     settings.progress_list = [0] * len(parsers)
 
