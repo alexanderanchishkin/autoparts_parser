@@ -33,7 +33,7 @@ def run_process(xlsx_name, filename, process='parse', start_date='', end_date=''
 
         settings.is_running = True
 
-        add(xlsx_name, filename)
+        # add(xlsx_name, filename)
         if process == 'parse':
             return parse(xlsx_name, filename)
         return 'Nothing'
@@ -61,20 +61,8 @@ def main():
         os.makedirs(temp_folder)
 
     try:
-        while os.path.isfile('pipefile2'):
-            time.sleep(10)
-
-        with open('pipefile', 'w') as f:
-            f.write('0')
-
         directory = os.path.join('uploads', 'input.xlsx')
-        p = DummyProcess(target=run_process, args=(directory, 'по_расписанию'))
-        p.start()
-        settings.is_running = True
-        while settings.is_running:
-            time.sleep(5)
-            with open('pipefile', 'w') as f:
-                f.write(str(calculate_progress()))
+        run_process(directory, 'тест')
 
     except:
         print('Произошла ошибка: ', traceback.print_exc())
@@ -85,8 +73,4 @@ def main():
 
 
 if __name__ == '__main__':
-    while True:
-        now = datetime.datetime.now()
-        if (now.hour == 10 or now.hour == 18) and (now.minute < 2):
-            main()
-        time.sleep(60)
+    main()
