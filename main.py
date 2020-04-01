@@ -17,6 +17,7 @@ def remove_readonly(func, path, excinfo):
 from multiprocessing.dummy import DummyProcess
 from backend.parser.parse import parse
 from backend.adder.add import add
+from backend.reporter.report import report
 from flask import current_app, Flask, render_template, request, send_from_directory
 
 app = Flask(__name__)
@@ -46,6 +47,12 @@ def make():
 
     if request.form.get('stop_button'):
         settings.is_terminating = True
+        return redirect('/')
+
+    if request.form.get('report_button'):
+        start_date = '2020-04-01'
+        end_date = '2020-04-01'
+        run_process(None, None, 'report', start_date, end_date)
         return redirect('/')
 
     folder = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
@@ -93,7 +100,7 @@ def download_report(path):
     return send_from_directory('results', path)
 
 
-def run_process(xlsx_name, filename, process='parse'):
+def run_process(xlsx_name, filename, process='parse', start_date='', end_date=''):
     try:
         print(f'start process {process}')
         settings.progress_list = []
@@ -106,6 +113,8 @@ def run_process(xlsx_name, filename, process='parse'):
 
         if process == 'add':
             return add(xlsx_name, filename)
+        if process == 'report':
+            return report(start_date, end_date)
         if process == 'parse':
             return parse(xlsx_name, filename)
         return 'Nothing'
