@@ -28,6 +28,19 @@ app.config["UPLOAD_FOLDER"] = 'uploads'
 p = None
 
 
+@app.after_request
+def add_header(r):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    r.headers['Cache-Control'] = 'public, max-age=0'
+    return r
+
+
 @app.route('/', methods=['GET'])
 def index():
     is_running = settings.is_running
@@ -38,6 +51,16 @@ def index():
     reports = get_reports()
     default_start_date = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
     default_end_date = datetime.datetime.now().strftime("%Y-%m-%d")
+
+    if os.path.isfile('pipefile'):
+        is_running = True
+        working_file = 'Идёт парсинг по расписанию'
+        with open('pipefile', 'r') as f:
+            try:
+                progress_bar = float(f.read())
+            except:
+                traceback.print_exc()
+                progress_bar = 50
 
     return render_template('index.html', link=link, reports=reports,
                            default_start_date=default_start_date, default_end_date=default_end_date,
@@ -53,6 +76,21 @@ def make():
         settings.is_terminating = True
         return redirect('/')
 
+    folder = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
+
+    if request.form.get('schedule_button'):
+        f = request.files['schedule_file']
+
+        if not f:
+            return redirect('/')
+
+        filename = 'input.xlsx'
+        filepath = os.path.join(folder, filename)
+        if os.path.isfile(filepath):
+            os.remove(filepath)
+        f.save(filepath)
+        return redirect('/')
+
     if request.form.get('report_button'):
         start_date = request.form.get('start_date')
         end_date = request.form.get('end_date')
@@ -60,7 +98,6 @@ def make():
             run_process(None, None, 'report', start_date, end_date)
         return redirect('/')
 
-    folder = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
     if not os.path.exists(folder):
         os.makedirs(folder)
 
@@ -103,6 +140,11 @@ def make():
 @app.route('/results/<path:path>')
 def download_report(path):
     return send_from_directory('results', path)
+
+
+@app.route('/uploads/<path:path>')
+def download_upload(path):
+    return send_from_directory('uploads', path)
 
 
 def run_process(xlsx_name, filename, process='parse', start_date='', end_date=''):

@@ -23,7 +23,18 @@
                            value="Запустить"
                     >
                 </div>
-                <br>
+                <hr>
+                <div class="schedule options">
+                    <input type="file"
+                           name="schedule_file"
+                    >
+                    <a href="uploads/input.xlsx">По расписанию</a>
+                    <input type="submit"
+                           name="schedule_button"
+                           value="Переписать файл по расписанию"
+                    >
+                </div>
+                <hr>
                 <div class="buttons">
                     <label>С <input type="date"
                            name="start_date"
@@ -52,6 +63,7 @@
                 {% endif %}
             {% endif %}
         </form>
+    <hr>
     </section>
     <section class="results-block block">
         <h2>Результаты</h2>
