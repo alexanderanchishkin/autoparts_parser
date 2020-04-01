@@ -17,7 +17,7 @@ def read_parts_from_xlsx(xlsx_file, max_amount=int(1e+6)):
     wb = load_workbook(xlsx_file)
     ws = wb.worksheets[0]
     start_row = 2 if not ws[1][0].value or has_cyrillic(ws[1][0].value) else 1
-    parts = [Part(ws[row][0].value, ws[row][1].value) for row in range(start_row, min(ws.max_row + 1, max_amount + 1))]
+    parts = [Part(ws[row][0].value, ws[row][1].value) for row in range(start_row, min(ws.max_row + 1, max_amount + 1)) if ws[row][0].value and ws[row][1].value]
     return parts
 
 

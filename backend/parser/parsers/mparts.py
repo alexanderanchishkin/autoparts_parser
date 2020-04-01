@@ -45,7 +45,7 @@ class Mparts(Parser):
         try:
             soup = BeautifulSoup(html, 'html.parser')
             min_title = soup.select_one('td.fn')['title']
-            min_price_str = soup.select_one('td.price').get_text()
+            min_price_str = soup.select('td.price')[1].get_text()
             if 'от' in min_price_str:
                 print(min_price_str)
                 print(re.sub('[^\.0-9]', '', min_price_str))

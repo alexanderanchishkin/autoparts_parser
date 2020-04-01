@@ -37,16 +37,17 @@ def parse(xlsx_name, filename, sql_mode=False):
 
     # parsers = [AvdMotors(0, sql_mode=True, table_prefix=time_moment_db_table_prefix),
     #            Froza(1, sql_mode=True, table_prefix=time_moment_db_table_prefix),
-    #            AutoPiter(2, sql_mode=True, table_prefix=time_moment_db_table_prefix)]
-    parsers = [Mparts(0, sql_mode=True, table_prefix=time_moment_db_table_prefix)]
+    #            AutoPiter(2, sql_mode=True, table_prefix=time_moment_db_table_prefix),
+    #            Mparts(3, sql_mode=True, table_prefix=time_moment_db_table_prefix)]
+
+    parsers = [AvdMotors(0, sql_mode=True, table_prefix=time_moment_db_table_prefix)]
+
     settings.progress_list = [0] * len(parsers)
 
     create_tables(time_moment_db_table_prefix, parsers)
-    #
-    # p = ThreadPool(3)
-    # ready_parts_array = list(p.map(lambda par: par.find_parts(parts), parsers))
 
-    parsers[0].find_parts(parts)
+    p = ThreadPool(len(parsers))
+    ready_parts_array = list(p.map(lambda par: par.find_parts(parts), parsers))
 
     print('start merging...')
     out_name = filename.split('.')[0].replace(' ', '_').replace(':', '_')

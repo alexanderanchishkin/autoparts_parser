@@ -110,7 +110,7 @@ class Froza(Parser):
 
     def parse_part_from_block_model(self, block_model, part):
         for array in block_model.values():
-            inner = array[0]
+            inner = array[1]
             if len(inner) < 4:
                 print(block_model)
             number = inner[3]
