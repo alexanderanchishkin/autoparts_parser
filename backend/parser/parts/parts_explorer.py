@@ -130,3 +130,44 @@ def merge_files(files, out_name):
     wb.remove(wb.active)
     wb.save(output_path)
     return output_filename
+
+
+def write_report(parts, out_name):
+    wb = Workbook()
+    folder = 'results'
+    ws = wb.active
+
+    ws.cell(1, 1).value = 'Артикул'
+    ws.cell(1, 2).value = 'Бренд'
+    ws.cell(1, 3).value = 'Минимум'
+    ws.cell(1, 5).value = 'Средняя'
+    ws.cell(1, 6).value = 'Максимум'
+    ws.merge_cells('C1:D1')
+    ws.merge_cells('F1:G1')
+    ws.cell(2, 3).value = 'Цена'
+    ws.cell(2, 4).value = 'Магазин'
+    ws.cell(2, 6).value = 'Цена'
+    ws.cell(2, 7).value = 'Магазин'
+
+    for row, part in enumerate(parts.values()):
+        ws.cell(row + 3, 1).value = part['article']
+        ws.cell(row + 3, 2).value = part['brand']
+        ws.cell(row + 3, 3).value = part['min_price']
+        ws.cell(row + 3, 4).value = part['min_shop']
+        ws.cell(row + 3, 5).value = part['avg_price']
+        ws.cell(row + 3, 6).value = part['max_price']
+        ws.cell(row + 3, 7).value = part['max_shop']
+
+    dims = {}
+    for row in ws.rows:
+        for cell in row:
+            if cell.value:
+                dims[cell.column] = max((dims.get(cell.column, 0), len(str(cell.value))))
+
+    for col, value in dims.items():
+        ws.column_dimensions[chr(ord('A') + col - 1)].width = value * 1.5
+
+    output_filename = f"{settings.TIME_MOMENT_NAME}_{out_name}.xlsx"
+    output_path = os.path.join(folder, output_filename)
+    wb.save(output_path)
+    return output_filename

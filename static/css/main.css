@@ -1,8 +1,8 @@
 .wrapper {
-    margin: 20vh auto 0 auto;
+    margin: 10vh auto 0 auto;
     border: 1px solid black;
     padding: 10px;
-    width: 600px;
+    width: 700px;
 }
 
 .make-report {
@@ -23,7 +23,6 @@ input[type='file'] {
 }
 
 .block {
-    max-width: 600px;
     margin: 0 auto;
 }
 
