@@ -47,6 +47,10 @@ def write_parts(table_name, parts):
 def write_part(table_name, part):
     key = (part.number + part.model).upper()
     article_id = settings.articles_dict.get(key)
+    if not article_id:
+        print('Not found: ')
+        print(part)
+        return False
     query = f"INSERT INTO {table_name} (`article_id`, `price`) VALUES ({article_id}, {part.price})"
     db.execute_sql(query)
     return True
