@@ -182,4 +182,4 @@ def calculate_progress():
 
 
 def get_reports():
-    return [name for name in os.listdir('results') if os.path.isfile(os.path.join('results', name))][::-1][:20]
+    return sorted([name for name in os.listdir('results') if os.path.isfile(os.path.join('results', name))])[::-1][:20]
