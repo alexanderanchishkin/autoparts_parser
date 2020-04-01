@@ -23,6 +23,10 @@ class AutoPiter(Parser):
     ALL_SLEEP = False
 
     def prepare_model(self, model):
+        if 'ntn' in model:
+            return 'Ntn'
+        if 'mahle' in model or 'knecht' in model:
+            return 'Knecht/Mahle'
         if model.lower() == 'gm':
             return 'General Motors'
         if model.lower() == 'hyundai' or model.lower() == 'hundai':
@@ -66,7 +70,7 @@ class AutoPiter(Parser):
                 return ready_part
 
             cost_html = self.get_cost_html(article_id)
-            cost = self.parse_cost(cost_html)
+            cost = self.parse_cost(cost_html, article_id)
             ready_part.price = cost
 
             if settings.DEBUG:
@@ -79,7 +83,7 @@ class AutoPiter(Parser):
         except Exception as e:
             print('Произошла ошибка: ', traceback.print_exc())
             print('Деталь: ', part)
-            return Part(part.number, part.model, part.model, '')
+            return Part(part.number, part.model, part.model, 'Нет в наличии')
         finally:
             self.done += 1
             settings.progress_list[self.id] = self.done / self.amount
@@ -112,15 +116,27 @@ class AutoPiter(Parser):
         return ready_part, article_id
 
     def get_cost_html(self, article_id):
-        url = f'https://32.autopiter.ru/api/appraise/getcosts?idArticles={article_id}&searchType=1'
+        # url = f'https://32.autopiter.ru/api/appraise/getcosts?idArticles={article_id}&searchType=1'
+        url = f'https://32.autopiter.ru/api/appraise?id={article_id}&searchType=1'
         headers = self.get_headers()
         proxies = self.get_next_proxies()
         r = self.session.get(url, verify=False, headers=headers, proxies=proxies)
         return r.text
 
-    def parse_cost(self, cost_html):
+    def parse_cost(self, cost_html, article_id):
         json_response = json.loads(cost_html)
-        return json_response['data'][0]['originalPrice']
+        if 'data' not in json_response:
+            print('error')
+            print(json_response)
+            raise Exception
+        stores = json_response['data']
+        costs = set([store['price'] for store in stores if 'price' in store and 'articleId' in store and store['articleId'] == article_id])
+        sorted_costs = sorted(list(costs))
+        if len(sorted_costs) == 0:
+            raise Exception
+        if len(sorted_costs) == 1:
+            return sorted_costs[0]
+        return sorted_costs[1]
 
     def get_headers(self):
         session = ''.join(random.choices(string.ascii_lowercase + string.digits, k=24))

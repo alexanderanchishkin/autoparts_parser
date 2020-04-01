@@ -40,7 +40,7 @@ def parse(xlsx_name, filename, sql_mode=False):
     #            AutoPiter(2, sql_mode=True, table_prefix=time_moment_db_table_prefix),
     #            Mparts(3, sql_mode=True, table_prefix=time_moment_db_table_prefix)]
 
-    parsers = [AvdMotors(0, sql_mode=True, table_prefix=time_moment_db_table_prefix)]
+    parsers = [AutoPiter(0, sql_mode=True, table_prefix=time_moment_db_table_prefix)]
 
     settings.progress_list = [0] * len(parsers)
 
