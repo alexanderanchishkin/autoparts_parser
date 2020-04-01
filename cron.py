@@ -1,3 +1,4 @@
+import datetime
 import os
 import shutil
 import stat
@@ -45,7 +46,7 @@ def run_process(xlsx_name, filename, process='parse', start_date='', end_date=''
         settings.is_terminating = False
 
 
-if __name__ == '__main__':
+def main():
     out_folder = 'results'
     temp_folder = os.path.join(out_folder, 'tmp')
 
@@ -60,6 +61,9 @@ if __name__ == '__main__':
         os.makedirs(temp_folder)
 
     try:
+        while os.path.isfile('pipefile2'):
+            time.sleep(10)
+
         with open('pipefile', 'w') as f:
             f.write('0')
 
@@ -77,3 +81,11 @@ if __name__ == '__main__':
         print('error')
     finally:
         os.remove('pipefile')
+
+
+if __name__ == '__main__':
+    while True:
+        now = datetime.datetime.now()
+        if (now.hour == 10 or now.hour == 18) and (now.minute < 2):
+            main()
+        time.sleep(60)

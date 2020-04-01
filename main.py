@@ -163,6 +163,8 @@ def run_process(xlsx_name, filename, process='parse', start_date='', end_date=''
         if process == 'report':
             return report(start_date, end_date)
         if process == 'parse':
+            with open('pipefile2', 'w') as f:
+                pass
             return parse(xlsx_name, filename)
         return 'Nothing'
     except Exception:
@@ -172,6 +174,8 @@ def run_process(xlsx_name, filename, process='parse', start_date='', end_date=''
         print('finish process')
         settings.is_running = False
         settings.is_terminating = False
+        if os.path.isfile('pipefile2'):
+            os.remove('pipefile2')
 
 
 def calculate_progress():
