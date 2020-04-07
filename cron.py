@@ -85,6 +85,8 @@ def main():
 
 
 if __name__ == '__main__':
+    if os.path.isfile('pipefile'):
+        os.remove('pipefile')
     while True:
         now = datetime.datetime.now()
         if (now.hour == 10 or now.hour == 18) and (now.minute < 2):
