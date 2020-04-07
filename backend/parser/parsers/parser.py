@@ -13,7 +13,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 class Parser:
     AUTH = None
-    BUFFER_SIZE = 5000
+    BUFFER_SIZE = 100
 
     OUTPUT_FILE = None
     OUTPUT_TABLE = None
@@ -64,6 +64,15 @@ class Parser:
 
         self.login()
         self.write_new_column()
+
+        if not parts:
+            return True
+
+        try:
+            self.get_part_html(parts[0])
+        except requests.exceptions.ProxyError:
+            settings.progress_list[self.id] = 1
+            return False
         # if not settings.DEBUG:
         #     print(f'{self.__class__.__name__}: {self.done}\\{self.amount}')
 

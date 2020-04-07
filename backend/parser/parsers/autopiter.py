@@ -19,7 +19,7 @@ class AutoPiter(Parser):
     DELAY = 15
 
     MULTI_REQUEST = True
-    THREADS_COUNT = 200
+    THREADS_COUNT = 50
     ALL_SLEEP = False
 
     def prepare_model(self, model):
@@ -43,14 +43,14 @@ class AutoPiter(Parser):
         url = f'https://32.autopiter.ru/api/searchdetails?detailNumber={part.number}'
         headers = self.get_headers()
         proxies = self.get_next_proxies()
-        r = self.session.get(url, verify=False, headers=headers, proxies=proxies)
+        r = self.session.get(url, verify=False, headers=headers, proxies=proxies, timeout=15)
 
         while r.status_code != 200:
             print('Try again...')
             url = f'https://32.autopiter.ru/api/searchdetails?detailNumber={part.number}'
             headers = self.get_headers()
             proxies = self.get_next_proxies()
-            r = self.session.get(url, verify=False, headers=headers, proxies=proxies)
+            r = self.session.get(url, verify=False, headers=headers, proxies=proxies, timeout=15)
 
         return r.text
 
@@ -120,7 +120,7 @@ class AutoPiter(Parser):
         url = f'https://32.autopiter.ru/api/appraise?id={article_id}&searchType=1'
         headers = self.get_headers()
         proxies = self.get_next_proxies()
-        r = self.session.get(url, verify=False, headers=headers, proxies=proxies)
+        r = self.session.get(url, verify=False, headers=headers, proxies=proxies, timeout=15)
         return r.text
 
     def parse_cost(self, cost_html, article_id):

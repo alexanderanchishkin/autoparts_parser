@@ -16,14 +16,14 @@ class Mparts(Parser):
     NEED_AUTH = False
 
     MULTI_REQUEST = True
-    THREADS_COUNT = 450
+    THREADS_COUNT = 50
 
     TIME_SLEEP = 0
 
     def get_part_html(self, part):
         url = f'https://www.v01.ru/auto/search/{part.number}/?brand_title={self.prepare_model(part.model)}'
         proxies = self.get_next_proxies()
-        r = requests.post(url, verify=False, proxies=proxies)
+        r = requests.post(url, verify=False, proxies=proxies, timeout=15)
         return r.text
 
     def prepare_model(self, model):

@@ -14,7 +14,7 @@ class AvdMotors(Parser):
     NEED_AUTH = False
 
     MULTI_REQUEST = True
-    THREADS_COUNT = 100
+    THREADS_COUNT = 50
 
     TIME_SLEEP = 0
 
@@ -22,11 +22,11 @@ class AvdMotors(Parser):
         url = f'https://www.avdmotors.ru/price/?number=' \
               f'{part.number.split("#")[0]}&catalog={self.prepare_model(part.model)}'
         proxies = self.get_next_proxies()
-        r = requests.post(url, verify=False, proxies=proxies)
+        r = requests.post(url, verify=False, proxies=proxies, timeout=15)
         url2 = f'https://www.avdmotors.ru/price/clones'
         proxies = self.get_next_proxies()
         json_request = {'number': part.number, 'catalog': self.prepare_model(part.model)}
-        r1 = requests.post(url2, json=json_request, verify=False, proxies=proxies)
+        r1 = requests.post(url2, json=json_request, verify=False, proxies=proxies, timeout=15)
         return r.text + '!^^!' + r1.text
 
     def prepare_model(self, model):

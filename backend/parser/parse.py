@@ -34,7 +34,8 @@ def parse(xlsx_name, filename, sql_mode=False):
         parts = all_parts
     else:
         parts = read_parts_from_xlsx(input_xlsx)
-    print(f'founded {len(parts)} parts.')
+    settings.max_parts = len(parts)
+    print(f'founded {settings.max_parts} parts.')
 
     parsers = [AvdMotors(0, sql_mode=True, table_prefix=time_moment_db_table_prefix),
                Froza(1, sql_mode=True, table_prefix=time_moment_db_table_prefix),

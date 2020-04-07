@@ -73,6 +73,9 @@
                     Чтение файла...
                 {% elif progress_bar < 100 %}
                     Выполняется работа...{{ progress_bar }}%
+                    {% for progress in progresses %}
+                        <br>{{ progress }}
+                    {% endfor %}
                 {% else %}
                     Сохранение файла...
                 {% endif %}

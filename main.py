@@ -47,6 +47,9 @@ def index():
     is_terminating = settings.is_terminating
     working_file = settings.working_file
     progress_bar = calculate_progress()
+
+    progresses = get_progresses()
+
     link = '/results/'
     reports = get_reports()
     default_start_date = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
@@ -65,7 +68,7 @@ def index():
     return render_template('index.html', link=link, reports=reports,
                            default_start_date=default_start_date, default_end_date=default_end_date,
                            is_running=is_running, progress_bar=progress_bar,
-                           is_terminating=is_terminating, working_file=working_file)
+                           is_terminating=is_terminating, working_file=working_file, progresses=progresses)
 
 
 @app.route('/', methods=['POST'])
@@ -183,6 +186,15 @@ def calculate_progress():
         return 0
 
     return round(100 * sum(settings.progress_list) / len(settings.progress_list), 2)
+
+
+def get_progresses():
+    if not settings.progress_list:
+        return []
+
+    targets = ['АВД Моторс', 'Фроза', 'Автопитер', 'МПартс', 'Партерра']
+    targets_progress_list = zip(targets, settings.progress_list)
+    return [f'{target[0]}: {round(target[1] * settings.max_parts)}\\{settings.max_parts}' for target in targets_progress_list]
 
 
 def get_reports():

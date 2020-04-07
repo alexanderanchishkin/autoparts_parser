@@ -16,14 +16,14 @@ class Parterra(Parser):
     NEED_AUTH = False
 
     MULTI_REQUEST = True
-    THREADS_COUNT = 150
+    THREADS_COUNT = 50
 
     TIME_SLEEP = 0
 
     def get_part_html(self, part):
         url = f'http://parterra.ru/utils/?action=search&term={part.number} {self.prepare_model(part.model)}'
         proxies = self.get_next_proxies()
-        r = requests.post(url, verify=False, proxies=proxies)
+        r = requests.post(url, verify=False, proxies=proxies, timeout=15)
         url2 = None
         try:
             json_response = json.loads(r.text)
@@ -40,7 +40,7 @@ class Parterra(Parser):
         except:
             return False
         proxies = self.get_next_proxies()
-        r = requests.get(url2, verify=False, proxies=proxies)
+        r = requests.get(url2, verify=False, proxies=proxies, timeout=15)
         return r.text
 
     def prepare_model(self, model):
@@ -64,16 +64,25 @@ class Parterra(Parser):
 
     def parse_html(self, html, part):
         try:
+            if not html:
+                raise Exception('Нет в наличии')
+
             soup = BeautifulSoup(html, 'html.parser')
             min_title = soup.select_one('div.product-title > h1').get_text()
 
             prices_block = soup.select_one('div.product-others')
-            if 'Аналоги' in prices_block:
-                raise Exception
+            if not prices_block or 'Аналоги' in prices_block:
+                raise Exception('Нет в наличии')
 
             prices_html = prices_block.select('div.price')
+            if not prices_html:
+                raise Exception('Нет в наличии')
+
             prices = [float(price.contents[0].replace(' ', '')) for price in prices_html]
-            main_price = soup.select_one('span.price').contents[0].replace(' ', '')
+            span_price = soup.select_one('span.price')
+            if not span_price:
+                raise Exception('Нет в наличии')
+            main_price = span_price.contents[0].replace(' ', '')
             prices.append(float(main_price))
             prices = sorted(prices)
             if len(prices) == 0:

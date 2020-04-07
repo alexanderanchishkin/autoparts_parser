@@ -13,3 +13,4 @@ articles_dict = {}
 working_file = None
 
 progress_list = []
+max_parts = 0

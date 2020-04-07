@@ -14,12 +14,12 @@ def has_cyrillic(text):
 
 
 def read_parts_from_xlsx(xlsx_file, max_amount=int(1e+6)):
-    wb = load_workbook(xlsx_file)
+    wb = load_workbook(xlsx_file, read_only=True)
     ws = wb.worksheets[0]
     start_row = 2 if not ws[1][0].value or has_cyrillic(ws[1][0].value) else 1
     parts = \
-        [Part(ws[row][0].value.split('#')[0], ws[row][1].value)
-         for row in range(start_row, min(ws.max_row + 1, max_amount + 1)) if ws[row][0].value and ws[row][1].value]
+        [Part(row[0].value.split('#')[0], row[1].value)
+         for row in ws.iter_rows(start_row, min(ws.max_row, max_amount), 1, 3) if row[0].value and row[1].value]
     return parts
 
 
@@ -120,10 +120,10 @@ def merge_files(files, out_name):
     temp_folder = os.path.join(folder, 'tmp')
     for file in files:
         filename = os.path.join(temp_folder, file)
-        file_wb = load_workbook(filename)
+        file_wb = load_workbook(filename, read_only=True)
         file_ws = file_wb.active
         wb.create_sheet(file_ws.title)
-        for row in file_ws.rows:
+        for row in file_ws.iter_rows(1, file_ws.max_row, 1, 4):
             wb[file_ws.title].append((ceil.value for ceil in row))
     output_filename = f"{settings.TIME_MOMENT_NAME}_{out_name}.xlsx"
     output_path = os.path.join(folder, output_filename)

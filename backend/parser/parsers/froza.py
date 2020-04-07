@@ -16,7 +16,7 @@ class Froza(Parser):
     TIME_SLEEP = 0
 
     MULTI_REQUEST = True
-    THREADS_COUNT = 450
+    THREADS_COUNT = 50
 
     def find_one_part(self, part):
         start_time = time.time()
