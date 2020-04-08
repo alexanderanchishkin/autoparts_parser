@@ -89,6 +89,6 @@ if __name__ == '__main__':
         os.remove('pipefile')
     while True:
         now = datetime.datetime.now()
-        if (now.hour == 10 or now.hour == 18) and (now.minute < 2):
+        if (now.hour == 10 or now.hour == 18) and (now.minute < 1):
             main()
         time.sleep(60)
