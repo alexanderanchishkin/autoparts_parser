@@ -52,16 +52,6 @@ def write_parts_to_xlsx(xlsx_file, xlsx_table, parts, time_moment):
 
     last_column = get_column_by_index(ws.max_column)
 
-    for row in range(2, ws.max_row + 1):
-        number = ws[row][0].value
-        if number not in parts:
-            continue
-        part = parts[number]
-        cell = last_column + str(row)
-
-        ws[cell] = part.price
-        parts.pop(number)
-
     for part in parts.values():
         write_new_part(ws, part, last_column)
 
