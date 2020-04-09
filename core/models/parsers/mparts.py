@@ -1,15 +1,13 @@
-from bs4 import BeautifulSoup
-
-
-import json
 import re
+
+import bs4
 import requests
 
-from backend.parser.parsers.parser import Parser
-from backend.parser.parts.part import Part
+from core.models import part as part_
+from core.models.base.parser import parser
 
 
-class Mparts(Parser):
+class Mparts(parser.Parser):
     OUTPUT_FILE = 'mparts.xlsx'
     OUTPUT_TABLE = 'Mparts'
 
@@ -43,13 +41,13 @@ class Mparts(Parser):
 
     def parse_html(self, html, part):
         try:
-            soup = BeautifulSoup(html, 'html.parser')
+            soup = bs4.BeautifulSoup(html, 'html.core')
             min_title = soup.select_one('td.fn')['title']
             min_price_str = soup.select('td.price')[1].get_text()
             min_price = re.sub('[^\.0-9]', '', min_price_str)
-            ready_part = Part(part.number, part.model, min_title, min_price)
+            ready_part = part_.Part(part.number, part.model, min_title, min_price)
         except:
-            ready_part = Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
+            ready_part = part_.Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
         return ready_part
 
 

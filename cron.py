@@ -9,8 +9,8 @@ import settings
 import time
 import traceback
 
-from backend.parser.parse import parse
-from backend.adder.add import add
+from core.parse import parse
+from core.add import add
 
 
 def remove_readonly(func, path, excinfo):
@@ -33,7 +33,7 @@ def run_process(xlsx_name, filename, process='parse', start_date='', end_date=''
 
         settings.is_running = True
 
-        add(xlsx_name, filename)
+        add(xlsx_name)
         if process == 'parse':
             return parse(xlsx_name, filename)
         return 'Nothing'

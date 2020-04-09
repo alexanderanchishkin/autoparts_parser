@@ -3,10 +3,8 @@ import re
 import settings
 import time
 
-from flask import current_app
-
 from openpyxl import load_workbook, Workbook
-from backend.parser.parts.part import Part
+from core.models.part import Part
 
 
 def has_cyrillic(text):
@@ -43,6 +41,7 @@ def write_column_to_xlsx(xlsx_file, xlsx_table, time_moment):
 
 
 def write_parts_to_xlsx(xlsx_file, xlsx_table, parts, time_moment):
+    return
     xlsx_file_path = settings.OUTPUT_DIRECTORY + xlsx_file
 
     if not os.path.exists(xlsx_file_path):

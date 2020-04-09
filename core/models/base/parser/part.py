@@ -4,14 +4,14 @@ import settings
 import time
 import traceback
 
-from backend.parser.parts.part import Part
-from backend.parser.parts.parts_explorer import write_parts_to_xlsx, write_column_to_xlsx
-from backend.parser.parts.parts_database import write_parts
+from models.part import Part
+from core.parts.parts_explorer import write_parts_to_xlsx, write_column_to_xlsx
+from core.parts.parts_database import write_parts
 
 from multiprocessing.dummy import Pool as ThreadPool
 
 
-class Parser:
+class PartParser:
     AUTH = None
     BUFFER_SIZE = 100
 
@@ -58,15 +58,7 @@ class Parser:
         return proxy
 
     def find_parts(self, parts):
-        start_time = time.time()
-        self.amount = len(parts)
-        self.done = 0
 
-        self.login()
-        self.write_new_column()
-
-        if not parts:
-            return True
 
         try:
             self.get_part_html(parts[0])
@@ -76,7 +68,7 @@ class Parser:
         # if not settings.DEBUG:
         #     print(f'{self.__class__.__name__}: {self.done}\\{self.amount}')
 
-        parts_chunks = [parts[i:i + min(len(parts), self.BUFFER_SIZE)] for i in range(0, len(parts), self.BUFFER_SIZE)]
+        parts_chunks = (parts[i:i + min(len(parts), self.BUFFER_SIZE)] for i in range(0, len(parts), self.BUFFER_SIZE))
         for parts_chunk in parts_chunks:
             if settings.is_terminating:
                 print('Terminating...')
@@ -96,7 +88,7 @@ class Parser:
 
             self.save_result(ready_parts)
 
-        print('time:', time.time() - start_time)
+
         return True
 
     def find_one_part(self, part):
@@ -155,9 +147,6 @@ class Parser:
 
         if settings.DEBUG:
             print(f'{self.__class__.__name__}: Детали сохранены')
-
-    def write_new_column(self):
-        write_column_to_xlsx(self.OUTPUT_FILE, self.OUTPUT_TABLE, settings.TIME_MOMENT)
 
     def check_model(self, model1, model2):
         pattern = '[^a-zA-Z]+'

@@ -2,8 +2,8 @@ import datetime
 import settings
 
 
-from backend.parser.parts.parts_database import get_all_parts, get_tuples_tables
-from backend.parser.parts.parts_explorer import write_report
+from core.parts.parts_database import get_all_parts, get_tuples_tables
+from core.parts.parts_explorer import write_report
 
 
 def report(start_date, end_date):

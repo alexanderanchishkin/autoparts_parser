@@ -16,9 +16,9 @@ def remove_readonly(func, path, excinfo):
 
 
 from multiprocessing.dummy import DummyProcess
-from backend.parser.parse import parse
-from backend.adder.add import add
-from backend.reporter.report import report
+from core.parse import parse
+from core.add import add
+from core.report import report
 from flask import current_app, Flask, render_template, request, send_from_directory
 
 app = Flask(__name__)
@@ -162,7 +162,7 @@ def run_process(xlsx_name, filename, process='parse', start_date='', end_date=''
         settings.is_running = True
 
         if process == 'add':
-            return add(xlsx_name, filename)
+            return add(xlsx_name)
         if process == 'report':
             return report(start_date, end_date)
         if process == 'parse':

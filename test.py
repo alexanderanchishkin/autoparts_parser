@@ -1,16 +1,12 @@
-import datetime
 import os
 import shutil
 import stat
 
-from multiprocessing.dummy import DummyProcess
-
 import settings
-import time
 import traceback
 
-from backend.parser.parse import parse
-from backend.adder.add import add
+from core import parse
+from core import add
 
 
 def remove_readonly(func, path, excinfo):
@@ -33,9 +29,9 @@ def run_process(xlsx_name, filename, process='parse', start_date='', end_date=''
 
         settings.is_running = True
 
-        add(xlsx_name, filename)
+        add.add(xlsx_name)
         if process == 'parse':
-            return parse(xlsx_name, filename)
+            return parse.parse(xlsx_name, filename)
         return 'Nothing'
     except Exception:
         print('Произошла ошибка: ', traceback.print_exc())
@@ -72,5 +68,21 @@ def main():
             os.remove('pipefile')
 
 
+from core.utilities import stopwatch
+
+var = 0
+
+
+class TestClass:
+    @stopwatch.time(__qualname__)
+    def test(self, a):
+        for _ in range(1, 100000):
+            a += 1
+
+class TestMore(TestClass):
+    pass
+
 if __name__ == '__main__':
+    TestMore().test(0)
+    exit()
     main()

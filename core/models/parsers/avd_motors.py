@@ -1,13 +1,13 @@
 import json
-import re
-import requests
 import traceback
 
-from backend.parser.parsers.parser import Parser
-from backend.parser.parts.part import Part
+import requests
+
+from core.models import part as part_
+from core.models.base.parser import parser
 
 
-class AvdMotors(Parser):
+class AvdMotors(parser.Parser):
     OUTPUT_FILE = 'avd_motors.xlsx'
     OUTPUT_TABLE = 'AVDMotors'
 
@@ -53,13 +53,13 @@ class AvdMotors(Parser):
         except:
             traceback.print_exc()
             print(response1)
-            return Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
+            return part_.Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
         prices = json_response['data']
         if isinstance(prices, dict):
             prices = list(prices.values())
 
         if not prices:
-            return Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
+            return part_.Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
 
         try:
             min_price = prices[0]['price']
@@ -67,7 +67,7 @@ class AvdMotors(Parser):
         except:
             traceback.print_exc()
             print(response1)
-            return Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
+            return part_.Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
         if len(prices) > 1:
             min_price2 = prices[1]['price']
             min_title2 = prices[1].get('item_name', part.number)
@@ -113,7 +113,7 @@ class AvdMotors(Parser):
         if min_price2 > int(1e+6) - 1:
             min_price2 = min_price
 
-        ready_part = Part(part.number, part.model, min_title2, min_price2)
+        ready_part = part_.Part(part.number, part.model, min_title2, min_price2)
         return ready_part
 
 

@@ -1,15 +1,14 @@
-from bs4 import BeautifulSoup
-
 import json
-import re
-import requests
 import traceback
 
-from backend.parser.parsers.parser import Parser
-from backend.parser.parts.part import Part
+import bs4
+import requests
+
+from core.models import part as part_
+from core.models.base.parser import parser
 
 
-class Parterra(Parser):
+class Parterra(parser.Parser):
     OUTPUT_FILE = 'parterra.xlsx'
     OUTPUT_TABLE = 'Parterra'
 
@@ -67,7 +66,7 @@ class Parterra(Parser):
             if not html:
                 raise Exception('Нет в наличии')
 
-            soup = BeautifulSoup(html, 'html.parser')
+            soup = bs4.BeautifulSoup(html, 'html.core')
             min_title = soup.select_one('div.product-title > h1').get_text()
 
             prices_block = soup.select_one('div.product-others')
@@ -91,8 +90,8 @@ class Parterra(Parser):
                 min_price = prices[0]
             else:
                 min_price = prices[1]
-            ready_part = Part(part.number, part.model, min_title, min_price)
+            ready_part = part_.Part(part.number, part.model, min_title, min_price)
         except:
             traceback.print_exc()
-            ready_part = Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
+            ready_part = part_.Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
         return ready_part

@@ -1,19 +1,15 @@
 import datetime
 import settings
-import sys
-import threading
 import urllib3
 
-from backend.parser.parsers.autopiter import AutoPiter
-from backend.parser.parsers.avd_motors import AvdMotors
-from backend.parser.parsers.froza import Froza
-from backend.parser.parsers.mparts import Mparts
-from backend.parser.parsers.parterra import Parterra
+from core.models.parsers.autopiter import AutoPiter
+from core.models.parsers.avd_motors import AvdMotors
+from core.models.parsers.froza import Froza
+from core.models.parsers.mparts import Mparts
+from core.models.parsers.parterra import Parterra
 
-from backend.parser.parts.parts_explorer import read_parts_from_xlsx, merge_files
-from backend.parser.parts.parts_database import create_tables, get_all_parts
-
-from backend.parser.parts.part import Part
+from core.parts.parts_explorer import read_parts_from_xlsx, merge_files
+from core.parts.parts_database import create_tables, get_all_parts
 
 from multiprocessing.dummy import Pool as ThreadPool
 

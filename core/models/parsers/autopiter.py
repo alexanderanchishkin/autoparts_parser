@@ -1,16 +1,15 @@
 import json
 import random
-import re
-import settings
 import string
 import time
 import traceback
 
-from backend.parser.parsers.parser import Parser
-from backend.parser.parts.part import Part
+from core.models import part as part_
+from core.models.base.parser import parser
+import settings
 
 
-class AutoPiter(Parser):
+class AutoPiter(parser.Parser):
     OUTPUT_FILE = 'autopiter.xlsx'
     OUTPUT_TABLE = 'AutoPiter'
 
@@ -83,7 +82,7 @@ class AutoPiter(Parser):
         except Exception as e:
             print('Произошла ошибка: ', traceback.print_exc())
             print('Деталь: ', part)
-            return Part(part.number, part.model, part.model, 'Нет в наличии')
+            return part_.Part(part.number, part.model, part.model, 'Нет в наличии')
         finally:
             self.done += 1
             settings.progress_list[self.id] = self.done / self.amount
@@ -106,13 +105,13 @@ class AutoPiter(Parser):
         relevant_models = [model for model in models if model['catalogName']
                            == self.prepare_model(part.model.lower())]
         if not relevant_models:
-            return Part(part.number, part.model, part.model, 'Нет в наличии'), -1
+            return part_.Part(part.number, part.model, part.model, 'Нет в наличии'), -1
 
         model = relevant_models[0]
         article_id = model['id']
         title = model['name']
 
-        ready_part = Part(part.number, part.model, title, 0)
+        ready_part = part_.Part(part.number, part.model, title, 0)
         return ready_part, article_id
 
     def get_cost_html(self, article_id):

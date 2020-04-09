@@ -1,14 +1,15 @@
 import json
-import requests
-import settings
 import time
 import traceback
 
-from backend.parser.parsers.parser import Parser
-from backend.parser.parts.part import Part
+import requests
+
+from core.models import part as part_
+from core.models.base.parser import parser
+import settings
 
 
-class Froza(Parser):
+class Froza(parser.Parser):
     OUTPUT_FILE = 'froza.xlsx'
     OUTPUT_TABLE = 'Froza'
 
@@ -37,7 +38,7 @@ class Froza(Parser):
         except Exception as e:
             print('Произошла ошибка: ', traceback.print_exc())
             print('Деталь: ', part)
-            return Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
+            return part_.Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
         finally:
             self.done += 1
             settings.progress_list[self.id] = self.done / self.amount
@@ -64,17 +65,18 @@ class Froza(Parser):
         json_response = json.loads(html)
         block = json_response['data']
         if not block:
-            return Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
+            return part_.Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
 
         for inner_block in block.values():
             return self.parse_part_from_block_model(inner_block, part)
 
-        return Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
+        return part_.Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
 
-    def parse_part_from_block_model(self, block_model, part):
+    @staticmethod
+    def parse_part_from_block_model(block_model, part):
         stores = list(block_model.values())[0]
         if len(stores) == 0:
-            return Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
+            return part_.Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
         if len(stores) == 1:
             inner = stores[0]
         else:
@@ -86,5 +88,5 @@ class Froza(Parser):
         title = inner[4]
         price = str(inner[16]).replace(',', '.')
 
-        ready_part = Part(number, part.model, title, price)
+        ready_part = part_.Part(number, part.model, title, price)
         return ready_part
