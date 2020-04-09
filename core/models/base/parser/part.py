@@ -5,8 +5,8 @@ import time
 import traceback
 
 from models.part import Part
-from core.parts.parts_explorer import write_parts_to_xlsx, write_column_to_xlsx
-from core.parts.parts_database import write_parts
+from core.io.xlsx import write_parts_to_xlsx
+from core.io.database.utilities.part import write_parts
 
 from multiprocessing.dummy import Pool as ThreadPool
 

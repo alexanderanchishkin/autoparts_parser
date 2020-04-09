@@ -1,7 +1,7 @@
 import urllib3
 
-from core.parts.parts_explorer import read_parts_from_xlsx
-from core.parts.parts_database import add_parts
+from core.io.xlsx import read_parts_from_xlsx
+from core.io.database.utilities.part import add_parts
 
 
 def add(xlsx_name):

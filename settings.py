@@ -8,7 +8,6 @@ OUTPUT_DIRECTORY = 'results/tmp/'
 screen = None
 is_running = False
 is_terminating = False
-articles_dict = {}
 
 working_file = None
 

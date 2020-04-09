@@ -2,15 +2,16 @@ import datetime
 import settings
 
 
-from core.parts.parts_database import get_all_parts, get_tuples_tables
-from core.parts.parts_explorer import write_report
+from core.io.database.utilities import database
+from core.io.database.utilities import part
+from core.io.xlsx import write_report
 
 
 def report(start_date, end_date):
     settings.TIME_MOMENT_NAME = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    all_parts = get_all_parts()
+    all_parts = part.get_all_parts()
     articles = {part.get_id(): (part.article, part.brand) for part in all_parts}
-    parts = get_tuples_tables(start_date, end_date)
+    parts = database.get_tuples_tables(start_date, end_date)
     statistics = filter_parts_by_id(parts, full_statistics)
     [one_statistics.update({'article': articles[part_id][0], 'brand': articles[part_id][1]})
      for part_id, one_statistics in statistics.items()]

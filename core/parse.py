@@ -8,13 +8,13 @@ from core.models.parsers.froza import Froza
 from core.models.parsers.mparts import Mparts
 from core.models.parsers.parterra import Parterra
 
-from core.parts.parts_explorer import read_parts_from_xlsx, merge_files
-from core.parts.parts_database import create_tables, get_all_parts
+from core.io.xlsx import read_parts_from_xlsx, merge_files
+from core.io.database.utilities.table import create_tables
 
 from multiprocessing.dummy import Pool as ThreadPool
 
 
-def parse(xlsx_name, filename, sql_mode=False):
+def parse(xlsx_name, filename):
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     settings.TIME_MOMENT = datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
     settings.TIME_MOMENT_NAME = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -23,13 +23,7 @@ def parse(xlsx_name, filename, sql_mode=False):
 
     input_xlsx = xlsx_name
 
-    all_parts = list(get_all_parts())
-    settings.articles_dict = {(article.article + article.brand): article.get_id() for article in all_parts}
-
-    if sql_mode:
-        parts = all_parts
-    else:
-        parts = read_parts_from_xlsx(input_xlsx)
+    parts = read_parts_from_xlsx(input_xlsx)
     settings.max_parts = len(parts)
     print(f'founded {settings.max_parts} parts.')
 
