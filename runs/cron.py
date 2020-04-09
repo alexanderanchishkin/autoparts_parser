@@ -5,7 +5,7 @@ import stat
 
 from multiprocessing.dummy import DummyProcess
 
-import settings
+from config import settings
 import time
 import traceback
 

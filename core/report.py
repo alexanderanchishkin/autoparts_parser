@@ -1,6 +1,5 @@
 import datetime
-import settings
-
+from config import settings
 
 from core.io.database.utilities import database
 from core.io.database.utilities import part

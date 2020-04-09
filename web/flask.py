@@ -3,7 +3,7 @@ import os
 import time
 import traceback
 
-import settings
+from config import settings
 import shutil
 import stat
 
@@ -198,4 +198,4 @@ def get_progresses():
 
 
 def get_reports():
-    return sorted([name for name in os.listdir('results') if os.path.isfile(os.path.join('results', name))])[::-1][:20]
+    return sorted([name for name in os.listdir('../files/results') if os.path.isfile(os.path.join('results', name))])[::-1][:20]

@@ -2,7 +2,7 @@ import os
 import shutil
 import stat
 
-import settings
+from config import settings
 import traceback
 
 from core import parse

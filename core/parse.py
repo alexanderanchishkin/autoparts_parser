@@ -1,5 +1,5 @@
 import datetime
-import settings
+from config import settings
 import urllib3
 
 from core.models.parsers.autopiter import AutoPiter

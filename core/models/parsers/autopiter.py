@@ -6,7 +6,7 @@ import traceback
 
 from core.models import part as part_
 from core.models.base.parser import parser
-import settings
+from config import settings
 
 
 class AutoPiter(parser.Parser):

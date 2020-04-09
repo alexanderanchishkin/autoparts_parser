@@ -1,6 +1,6 @@
 import os.path
 import re
-import settings
+from config import settings
 import time
 
 from openpyxl import load_workbook, Workbook

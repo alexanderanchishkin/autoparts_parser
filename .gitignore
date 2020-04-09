@@ -1,6 +1,5 @@
 /.idea/
 /venv/
-/results/
-/uploads/
-/proxies.txt
+/files/
+/config/proxies.txt
 /pipefile

@@ -3,6 +3,8 @@ import requests
 
 class Parser:
     def __init__(self, parser_id=0, table_prefix=None):
+        class_name = self.__class__.nam
+
         self.table_prefix = table_prefix
         self.table_name = table_prefix + self.OUTPUT_FILE.split('.')[0]
         self.id = parser_id

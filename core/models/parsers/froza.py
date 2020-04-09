@@ -6,7 +6,7 @@ import requests
 
 from core.models import part as part_
 from core.models.base.parser import parser
-import settings
+from config import settings
 
 
 class Froza(parser.Parser):
