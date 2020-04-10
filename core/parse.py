@@ -1,17 +1,17 @@
 from multiprocessing import dummy as thread
 
 from config import settings
-from core.io import xlsx
-from core.io.database.utilities import table as table_
+from core.io.xlsx import part as part_xlsx
+from core.io.database.utilities import table as table_db
 from core.models import parsers as parsers_
 from core.utilities import time as time_
 from core.utilities import warning
 
 
-def parse(xlsx_name, filename, sql_output=True):
+def parse(xlsx_name, filename, sql_output=True, source='xlsx'):
     init()
 
-    parts, count = xlsx.part.read_parts_iter(xlsx_name)
+    parts, count = _get_parts_iter(source, xlsx=xlsx_name)
     print(f'founded {count} parts.')
 
     parsers = load_parsers()
@@ -20,6 +20,13 @@ def parse(xlsx_name, filename, sql_output=True):
 
     return output_filename
 
+
+def _get_parts_iter(source, **kwargs):
+    if source == 'xlsx':
+        return part_xlsx.read_parts_iter(kwargs.get('xlsx', None))
+    if source == 'sql':
+        return None, 0
+    return None, 0
 
 def init():
     time_.init_time()
