@@ -75,7 +75,7 @@ class Parterra(parser.GetParsePartParser):
         for suggestion in suggestions:
             suggestion_value = Parterra._prepare_string(suggestion['value'])
 
-            if str(part.number).replace(' ', '').upper() in suggestion_value \
+            if part.number.replace(' ', '').upper() in suggestion_value \
                     and Parterra._prepare_string(Parterra.prepare_model(part.model)) in suggestion_value:
                 return 'http://parterra.ru' + suggestion['href']
         return None

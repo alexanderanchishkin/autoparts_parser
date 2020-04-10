@@ -10,17 +10,28 @@ def add_parts(parts):
     articles = models.Article.generate_rows_from_parts(parts)
     models.Article.insert_many(articles).on_conflict_ignore().execute()
 
-# TODO: One statement
-def write_parts(table_name, parts):
-    [write_part(table_name, part) for article, part in parts.items() if value.is_correct_positive(part.price)]
+
+def write_parts(table_name: str, parts: list):
+    correct_parts = [part for part in parts if value.is_correct_positive(part.price)]
+    insert_parts(table_name, correct_parts)
 
 
-def write_part(table_name, part):
-    article_id = f"SELECT id FROM articles " \
-                 f"WHERE LOWER(article) = LOWER({str(part.number)}) " \
-                 f"AND LOWER(brand) = LOWER({part.model}) LIMIT 1"
-
+def insert_parts(table_name: str, parts: list):
     # noinspection SqlResolve
-    query = f"INSERT INTO {table_name} (`article_id`, `price`) VALUES ({article_id}, {part.price})"
+    query_start = f"INSERT INTO {table_name} (`article_id`, `price`) VALUES"
+    parts_values = [prepare_part_values(part) for part in parts]
+    query = f"{query_start} {', '.join(parts_values)}"
 
     database.db.execute_sql(query)
+
+
+def prepare_part_values(part):
+    article_id = _generate_article_id_subquery(part)
+    return f"({article_id}, {part.price})"
+
+
+def _generate_article_id_subquery(part):
+    return\
+        f"SELECT id FROM articles "\
+        f"WHERE LOWER(article) = LOWER({str(part.number)}) "\
+        f"AND LOWER(brand) = LOWER({part.model}) LIMIT 1"

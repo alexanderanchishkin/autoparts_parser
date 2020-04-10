@@ -36,7 +36,7 @@ def write_parts_to_xlsx(ws, parts: list):
 
 
 def _get_row_from_part(part):
-    return [str(part.number), part.model, part.title, part.price]
+    return [part.number, part.model, part.title, part.price]
 
 
 def _prepare_part_number(number):
