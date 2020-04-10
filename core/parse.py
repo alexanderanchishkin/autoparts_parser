@@ -8,14 +8,14 @@ from core.utilities import time as time_
 from core.utilities import warning
 
 
-def parse(xlsx_name, filename):
+def parse(xlsx_name, filename, sql_output=True):
     init()
 
     parts, count = xlsx.part.read_parts_iter(xlsx_name)
     print(f'founded {count} parts.')
 
     parsers = load_parsers()
-    run_parsers(parsers, parts, count)
+    run_parsers(parsers, parts, count, sql_output)
     output_filename = finalize_parts(filename, parsers)
 
     return output_filename
@@ -36,8 +36,9 @@ def load_parsers():
     ]
 
 
-def run_parsers(parsers, parts, count):
-    table_.create_tables(settings.time_moment_db_table_prefix, parsers)
+def run_parsers(parsers, parts, count, sql_output=True):
+    if sql_output:
+        table_.create_tables(settings.time_moment_db_table_prefix, parsers)
 
     p = thread.Pool(len(parsers))
     p.map(run(parts, count), parsers)

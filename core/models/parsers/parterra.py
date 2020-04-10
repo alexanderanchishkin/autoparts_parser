@@ -1,5 +1,4 @@
 import json
-import traceback
 
 import bs4
 
@@ -23,39 +22,30 @@ class Parterra(parser.GetParsePartParser):
     @staticmethod
     def parse_html(html, part):
         if html is None or not html:
-            return Parterra.not_found(part)
+            return part.not_found()
 
         soup = bs4.BeautifulSoup(html, 'html.parser')
-        min_title_block = soup.select_one('div.product-title > h1')
-        if min_title_block is None:
-            return part.not_found(part)
-        min_title = min_title_block.get_text()
 
-        prices_block = soup.select_one('div.product-others')
-        if not prices_block or 'Аналоги' in prices_block:
-            return Parterra.not_found(part)
+        min_title = Parterra._get_min_title(soup)
 
-        prices_html = prices_block.select('div.price')
-        if not prices_html:
-            return Parterra.not_found(part)
+        prices = Parterra._get_prices(soup)
+        main_price = Parterra._get_main_price(soup)
 
-        prices = [float(price.contents[0].replace(' ', '')) for price in prices_html]
-        span_price = soup.select_one('span.price')
-        if not span_price:
-            return Parterra.not_found(part)
-        main_price = span_price.contents[0].replace(' ', '')
-        prices.append(float(main_price))
+        if prices is None or main_price is None:
+            return part.not_found()
+
+        prices.append(main_price)
         prices = sorted(prices)
+
         if len(prices) == 0:
-            raise Exception
-        if len(prices) == 1:
-            min_price = prices[0]
-        else:
-            min_price = prices[1]
+            return part.not_found()
+
+        min_price = prices[0] if len(prices) == 1 else prices[1]
         ready_part = part_.Part(part.number, part.model, min_title, min_price)
         return ready_part
 
-    def prepare_model(self, model):
+    @staticmethod
+    def prepare_model(model):
         up_model = model.upper()
         if up_model == 'GENERAL MOTORS':
             return 'GM'
@@ -71,7 +61,8 @@ class Parterra(parser.GetParsePartParser):
             return 'Citroen/Peugeot'
         return up_model
 
-    def _parse_part_url(self, r, part):
+    @staticmethod
+    def _parse_part_url(r, part):
         try:
             json_response = json.loads(r.text)
         except json.JSONDecodeError:
@@ -85,9 +76,65 @@ class Parterra(parser.GetParsePartParser):
             suggestion_value = Parterra._prepare_string(suggestion['value'])
 
             if str(part.number).replace(' ', '').upper() in suggestion_value \
-                    and Parterra._prepare_string(self.prepare_model(part.model)) in suggestion_value:
+                    and Parterra._prepare_string(Parterra.prepare_model(part.model)) in suggestion_value:
                 return 'http://parterra.ru' + suggestion['href']
         return None
+
+    @staticmethod
+    def _get_min_title(soup):
+        min_title_block = soup.select_one('div.product-title > h1')
+        if min_title_block is None:
+            return None
+        min_title = min_title_block.get_text()
+        return min_title
+
+    @staticmethod
+    def _get_prices(soup):
+        prices_block = Parterra._get_prices_block(soup)
+        if prices_block is None:
+            return None
+        prices_html = Parterra._get_prices_html(prices_block)
+        if prices_html is None:
+            return None
+        prices = Parterra._get_prices_from_html(prices_html)
+        return prices
+
+    @staticmethod
+    def _get_prices_block(soup):
+        prices_block = soup.select_one('div.product-others')
+        if prices_block is None:
+            return None
+
+        if 'Аналоги' in prices_block:
+            return None
+        return prices_block
+
+    @staticmethod
+    def _get_prices_html(prices_block):
+        return prices_block.select('div.price')
+
+    @staticmethod
+    def _get_prices_from_html(prices_html):
+        raw_prices = [Parterra._prepare_price(price) for price in prices_html]
+        prices = [price for price in raw_prices if price is not None]
+        return prices
+
+    @staticmethod
+    def _get_main_price(soup):
+        span_price = soup.select_one('span.price')
+        if span_price is None:
+            return None
+
+        main_price = Parterra._prepare_price(span_price)
+        return main_price
+
+    @staticmethod
+    def _prepare_price(price):
+        if price is None:
+            return None
+        if not price.contents:
+            return None
+        return float(price.contents[0].replace(' ', ''))
 
     @staticmethod
     def _prepare_string(string):

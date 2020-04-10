@@ -35,14 +35,14 @@ class Autopiter(part_parser.PartParser):
         return r.text
 
     @staticmethod
-    def parse_html(html, part):
+    def parse_html(html, part: part_.Part):
         json_response = json.loads(html)
         models = json_response['data']['catalogs']
 
         relevant_models = [model for model in models
                            if model['catalogName'] == Autopiter.prepare_model(part.model.lower())]
         if not relevant_models:
-            return Autopiter.not_found(part), -1
+            return part.not_found(), -1
 
         model = relevant_models[0]
         article_id = model['id']

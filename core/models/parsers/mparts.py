@@ -13,14 +13,18 @@ class Mparts(parser.GetParsePartParser):
         return r.text
 
     def parse_html(self, html, part):
-        try:
-            soup = bs4.BeautifulSoup(html, 'html.core')
-            min_title = soup.select_one('td.fn')['title']
-            min_price_str = soup.select('td.price')[1].get_text()
-            min_price = re.sub('[^\.0-9]', '', min_price_str)
-            ready_part = part_.Part(part.number, part.model, min_title, min_price)
-        except:
-            ready_part = part_.Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
+        if html is None or not html:
+            return part.not_found()
+
+        soup = bs4.BeautifulSoup(html, 'html.core')
+
+        min_title = Mparts._get_min_title(soup)
+        min_price = Mparts._get_min_price(soup)
+
+        if min_price is None:
+            return part.not_found()
+
+        ready_part = part_.Part(part.number, part.model, min_title, min_price)
         return ready_part
 
     @staticmethod
@@ -35,3 +39,32 @@ class Mparts(parser.GetParsePartParser):
         if 'MERCEDE' in up_model:
             return 'MERCEDES-BENZ'
         return up_model.replace(' ', '+')
+
+    @staticmethod
+    def _get_min_title(soup):
+        fn_block = soup.select_one('td.fn')
+        if fn_block is None:
+            return None
+        if 'title' not in fn_block:
+            return None
+        min_title = fn_block['title']
+        return min_title
+
+    @staticmethod
+    def _get_min_price(soup):
+        block_prices = soup.select('td.price')
+        if block_prices is None:
+            return None
+
+        if not block_prices:
+            return None
+
+        min_price_block = block_prices[0] if len(block_prices) == 1 else block_prices[1]
+        min_price_string = min_price_block.get_text()
+
+        min_price = Mparts._prepare_price(min_price_string)
+        return min_price
+
+    @staticmethod
+    def _prepare_price(string):
+        return re.sub('[^.0-9]', '', string)

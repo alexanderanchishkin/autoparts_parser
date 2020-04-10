@@ -20,13 +20,21 @@ class Parser(abc.ABC):
 
     THREADS_COUNT = 50
 
-    def __init__(self):
+    def __init__(self, xlsx_input=True, xlsx_output=True, sql_input=False, sql_output=True):
+        self.xlsx_input = xlsx_input
+        self.xlsx_output = xlsx_output
+
+        self.sql_input = sql_input
+        self.sql_output = sql_output
+
         self.table_prefix = settings.time_moment_db_table_prefix
         self.table_name = self.table_prefix + parser_.get_output_filename(self).split('.')[0]
 
         self.current_proxies = None
         self.proxies = []
         self.proxy_index = 0
+
+        self.wb = None
 
         self.done = 0
         self.total = 0
@@ -39,7 +47,13 @@ class Parser(abc.ABC):
         self.total = count
         self.initialize()
 
+        if self.xlsx_output:
+            self.wb = part_xlsx.start_write_parts(settings.time_moment)
+
         ready_parts = self.find_parts(iter_parts)
+
+        if self.xlsx_output and self.wb is not None:
+            part_xlsx.save_temp_parts(self.wb, parser_.get_output_filename(self))
         return ready_parts
 
     def initialize(self):
@@ -47,9 +61,6 @@ class Parser(abc.ABC):
         self.proxies = proxy_.load()
 
     def save_result(self, ready_parts):
-        if settings.DEBUG:
-            print(f'{self.__class__.__name__}: Начинаем запись в таблицу')
-
         try:
             part_db.write_parts(self.table_name, ready_parts)
         except:
@@ -61,9 +72,6 @@ class Parser(abc.ABC):
             # part_xlsx.write_parts_to_xlsx(self.OUTPUT_FILE, self.OUTPUT_TABLE, ready_parts, settings.time_moment)
         except:
             traceback.print_exc()
-
-        if settings.DEBUG:
-            print(f'{self.__class__.__name__}: Детали сохранены')
 
     def request(self, url, headers=None, proxies=None, retry=True, method='GET', verify=False, timeout=15, attempts=5):
         if headers is None:
@@ -90,13 +98,9 @@ class Parser(abc.ABC):
         return {}
 
     @staticmethod
-    def not_found(part):
-        return part_.Part.not_found(part)
-
-    @staticmethod
     def prepare_model(model):
         return model
 
     @abc.abstractmethod
-    def find_parts(self, parts):
+    def find_parts(self, iter_parts):
         pass

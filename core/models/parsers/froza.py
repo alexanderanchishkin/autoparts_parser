@@ -24,18 +24,18 @@ class Froza(parser.GetParsePartParser):
         json_response = json.loads(html)
         block = json_response['data']
         if not block:
-            return Froza.not_found(part)
+            return part.not_found()
 
         for inner_block in block.values():
             return Froza._parse_part_from_block_model(inner_block, part)
 
-        return Froza.not_found(part)
+        return part.not_found()
 
     @staticmethod
     def _parse_part_from_block_model(block_model, part):
         stores = list(block_model.values())[0]
         if len(stores) == 0:
-            return Froza.not_found(part)
+            return part.not_found()
 
         inner = stores[0] if len(stores) == 1 else stores[1]
 

@@ -18,7 +18,7 @@ class PartParser(parser.Parser, abc.ABC):
     MULTI_REQUEST = False
     THREADS_COUNT = 0
 
-    def find_parts(self, parts):
+    def find_parts(self, iter_parts):
         # TODO: Realize
         pass
 

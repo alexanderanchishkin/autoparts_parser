@@ -27,14 +27,14 @@ class AvdMotors(parser.GetParsePartParser):
             return AvdMotors._handle_error(part)
 
         if 'data' not in json_response:
-            return AvdMotors.not_found(part)
+            return part.not_found()
 
         prices = json_response['data']
         if isinstance(prices, dict):
             prices = list(prices.values())
 
         if not prices:
-            return AvdMotors.not_found(part)
+            return part.not_found()
 
         min_price = prices[0].get('price', None)
         min_title = prices[0].get('item_name', part.number)
@@ -47,7 +47,7 @@ class AvdMotors(parser.GetParsePartParser):
             min_title2 = min_title
 
         if min_price is None or min_price2 is None:
-            return AvdMotors.not_found(part)
+            return part.not_found()
 
         try:
             json_response = json.loads(response2)
@@ -56,7 +56,7 @@ class AvdMotors(parser.GetParsePartParser):
             return AvdMotors._handle_error(part)
 
         if not clones:
-            return AvdMotors.not_found(part)
+            return part.not_found()
 
         articles = clones[0]
         if isinstance(articles, dict):
@@ -94,7 +94,7 @@ class AvdMotors(parser.GetParsePartParser):
         return ready_part
 
     @staticmethod
-    def prepare_model(model):
+    def prepare_model(model: str):
         up_model = model.upper()
         if 'AC' in up_model and 'DELCO' in up_model:
             return 'AC DELCO'
@@ -109,7 +109,7 @@ class AvdMotors(parser.GetParsePartParser):
         return up_model
 
     @staticmethod
-    def _handle_error(part):
+    def _handle_error(part: part_.Part):
         print('AVDMotors: ')
         traceback.print_exc()
-        return AvdMotors.not_found(part)
+        return part.not_found()
