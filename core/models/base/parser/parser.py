@@ -1,12 +1,10 @@
 import abc
-import traceback
 
 import requests
 
 from config import settings
 from core.io.database.utilities import part as part_db
 from core.io.xlsx import part as part_xlsx
-from core.models import part as part_
 from core.utilities import parser as parser_
 from core.utilities import proxy as proxy_
 from core.utilities import stopwatch
