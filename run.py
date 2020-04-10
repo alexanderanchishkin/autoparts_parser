@@ -1,8 +1,8 @@
 import sys
 
-from runs import cron
+from runs import schedule
 from runs import test
-from runs import waitress_server
+from runs import web
 
 
 def main():
@@ -11,12 +11,12 @@ def main():
         return
 
     run = sys.argv[1]
-    if run == 'cron':
-        cron.main()
+    if run == 'schedule':
+        schedule.main()
     elif run == 'test':
         test.main()
     elif run == 'web':
-        waitress_server.main()
+        web.main()
     else:
         print('Run not found')
 
