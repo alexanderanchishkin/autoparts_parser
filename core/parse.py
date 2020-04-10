@@ -1,12 +1,11 @@
-import datetime
 from multiprocessing import dummy as thread
-import urllib3
 
 from config import settings
 from core.io import xlsx
 from core.io.database.utilities import table as table_
 from core.models import parsers as parsers_
-from core.utilities import proxy
+from core.utilities import time as time_
+from core.utilities import warning
 
 
 def parse(xlsx_name, filename):
@@ -23,19 +22,8 @@ def parse(xlsx_name, filename):
 
 
 def init():
-    proxy.load()
-    init_time()
-
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-
-def init_time():
-    now = datetime.datetime.now()
-
-    settings.time_moment_date = now
-    settings.time_moment = now.strftime("%d.%m.%Y %H:%M:%S")
-    settings.time_moment_name = now.strftime("%Y%m%d_%H%M%S")
-    settings.time_moment_db_table_prefix = now.strftime("%Y%m%d__%H%M%S__")
+    time_.init_time()
+    warning.init_warnings()
 
 
 def load_parsers():
