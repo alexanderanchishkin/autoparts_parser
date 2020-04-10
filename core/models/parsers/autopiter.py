@@ -77,7 +77,7 @@ class AutoPiter(parser.Parser):
                 print('end finding')
 
             if not settings.DEBUG:
-                print(f"{self.__class__.__name__}: {self.done}\\{self.amount}\n", end='')
+                print(f"{self.__class__.__name__}: {self.done}\\{self.total}\n", end='')
             return ready_part
         except Exception as e:
             print('Произошла ошибка: ', traceback.print_exc())
@@ -85,7 +85,7 @@ class AutoPiter(parser.Parser):
             return part_.Part(part.number, part.model, part.model, 'Нет в наличии')
         finally:
             self.done += 1
-            settings.progress_list[self.id] = self.done / self.amount
+            settings.progress_list[self.id] = self.done / self.total
             time.sleep(max(self.DELAY - (time.time() - start_time), 0))
             if self.proxy_index == 0:
                 AutoPiter.ALL_SLEEP = True

@@ -5,3 +5,10 @@ def load():
     except FileNotFoundError:
         print('Проверьте лист прокси!')
         return []
+
+
+def prepare_proxy(proxy):
+    return {
+          "http": f'http://{proxy}',
+          "https": f'https://{proxy}',
+    }

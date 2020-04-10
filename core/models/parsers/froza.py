@@ -33,7 +33,7 @@ class Froza(parser.Parser):
                 print('end finding')
 
             if not settings.DEBUG:
-                print(f"{self.__class__.__name__}: {self.done}\\{self.amount}\n", end='')
+                print(f"{self.__class__.__name__}: {self.done}\\{self.total}\n", end='')
             return ready_part
         except Exception as e:
             print('Произошла ошибка: ', traceback.print_exc())
@@ -41,7 +41,7 @@ class Froza(parser.Parser):
             return part_.Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
         finally:
             self.done += 1
-            settings.progress_list[self.id] = self.done / self.amount
+            settings.progress_list[self.id] = self.done / self.total
             # time.sleep(max(30 - (time.time() - start_time), 0))
 
     def get_part_html(self, part):

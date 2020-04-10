@@ -15,7 +15,7 @@ def parse(xlsx_name, filename):
     print(f'founded {count} parts.')
 
     parsers = load_parsers()
-    run_parsers(parsers, parts)
+    run_parsers(parsers, parts, count)
     output_filename = finalize_parts(filename, parsers)
 
     return output_filename
@@ -36,11 +36,11 @@ def load_parsers():
     ]
 
 
-def run_parsers(parsers, parts):
+def run_parsers(parsers, parts, count):
     table_.create_tables(settings.time_moment_db_table_prefix, parsers)
 
     p = thread.Pool(len(parsers))
-    p.map(run(parts), parsers)
+    p.map(run(parts, count), parsers)
 
 
 def finalize_parts(filename, parsers):
@@ -55,7 +55,7 @@ def finalize_parts(filename, parsers):
     return output_filename
 
 
-def run(parts):
+def run(parts, count):
     def run_parser(parser):
-        parser.find_parts(parts)
+        parser.execute(parts, count)
     return run_parser
