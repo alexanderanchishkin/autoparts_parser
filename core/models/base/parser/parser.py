@@ -63,9 +63,8 @@ class Parser(abc.ABC):
     def save_result(self, ready_parts):
         if self.sql_output:
             part_db.write_parts(self.table_name, ready_parts)
-
-        # TODO: excel
-        # part_xlsx.write_parts_to_xlsx(self.OUTPUT_FILE, self.OUTPUT_TABLE, ready_parts, settings.time_moment)
+        if self.xlsx_output:
+            part_xlsx.write_parts_to_xlsx(self.wb.active, ready_parts)
 
     def request(self, url, headers=None, proxies=None, retry=True, method='GET', verify=False, timeout=15, attempts=5):
         if headers is None:
