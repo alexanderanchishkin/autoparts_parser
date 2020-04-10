@@ -61,17 +61,11 @@ class Parser(abc.ABC):
         self.proxies = proxy_.load()
 
     def save_result(self, ready_parts):
-        try:
+        if self.sql_output:
             part_db.write_parts(self.table_name, ready_parts)
-        except:
-            traceback.print_exc()
 
-        try:
-            pass
-            # TODO: excel
-            # part_xlsx.write_parts_to_xlsx(self.OUTPUT_FILE, self.OUTPUT_TABLE, ready_parts, settings.time_moment)
-        except:
-            traceback.print_exc()
+        # TODO: excel
+        # part_xlsx.write_parts_to_xlsx(self.OUTPUT_FILE, self.OUTPUT_TABLE, ready_parts, settings.time_moment)
 
     def request(self, url, headers=None, proxies=None, retry=True, method='GET', verify=False, timeout=15, attempts=5):
         if headers is None:

@@ -1,28 +1,31 @@
 import abc
-import re
-import requests
-from config import settings
 import time
-import traceback
 
-from core.io.database.utilities.part import write_parts
-from core.models.base.parser import parser
+from config import settings
+from core.models.base.parser import parser as parser_
 from core.models import part as part_
-
-from core.utilities import parser as parser_
+from core.utilities import part as part_utilities
+from core.utilities import parser as parser_utilities
 
 from multiprocessing import dummy as thread
 
 
-class PartParser(parser.Parser, abc.ABC):
+class PartParser(parser_.Parser, abc.ABC):
     MULTI_REQUEST = False
     THREADS_COUNT = 0
 
     def find_parts(self, iter_parts):
-        # TODO: Realize
-        pass
+        while True:
+            parts_chunk = part_utilities.get_next_parts(iter_parts, self.BUFFER_SIZE)
 
-    def try_find_part(self, part):
+            if not parts_chunk:
+                break
+
+            p = thread.Pool(len(parts_chunk))
+            ready_parts = p.map(self.try_find_one_part, parts_chunk)
+            self.save_result(ready_parts)
+
+    def try_find_one_part(self, part):
         start_time = time.time()
         try:
             ready_part = self.find_one_part(part)
@@ -38,7 +41,7 @@ class PartParser(parser.Parser, abc.ABC):
     def handle_part(self, start_time):
         self.done += 1
         end_time = time.time()
-        time.sleep(parser_.get_remains_delay(self.DELAY, start_time, end_time))
+        time.sleep(parser_utilities.get_remains_delay(self.DELAY, start_time, end_time))
 
     @abc.abstractmethod
     def find_one_part(self, part):

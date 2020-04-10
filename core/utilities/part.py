@@ -1,4 +1,9 @@
+import itertools
 import re
+
+
+def get_next_parts(iter_parts, n: int) -> list:
+    return list(itertools.islice(iter_parts, n))
 
 
 def equal_models(self, model1, model2):

@@ -10,7 +10,7 @@ def add_parts(parts):
     articles = models.Article.generate_rows_from_parts(parts)
     models.Article.insert_many(articles).on_conflict_ignore().execute()
 
-
+# TODO: One statement
 def write_parts(table_name, parts):
     [write_part(table_name, part) for article, part in parts.items() if value.is_correct_positive(part.price)]
 
