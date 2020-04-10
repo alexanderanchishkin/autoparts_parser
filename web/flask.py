@@ -22,6 +22,7 @@ from core.report import report
 from flask import current_app, Flask, render_template, request, send_from_directory, send_file
 
 app = Flask(__name__)
+
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 app.config["CONTENT_FOLDER"] = 'files'

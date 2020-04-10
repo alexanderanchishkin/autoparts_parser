@@ -8,7 +8,8 @@ from core.models.parsers.froza import Froza
 from core.models.parsers.mparts import Mparts
 from core.models.parsers.parterra import Parterra
 
-from core.io.xlsx import read_parts_from_xlsx, merge_files
+from core.io.xlsx.utilities.merge import merge_files
+from core.io.xlsx.part import read_parts_iter
 from core.io.database.utilities.table import create_tables
 
 from core.utilities import proxy
@@ -23,9 +24,7 @@ def parse(xlsx_name, filename):
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     input_xlsx = xlsx_name
-
-    parts, count = read_parts_from_xlsx(input_xlsx)
-
+    parts, count = read_parts_iter(input_xlsx)
     print(f'founded {count} parts.')
 
     parsers = [AvdMotors(),
@@ -37,12 +36,13 @@ def parse(xlsx_name, filename):
     create_tables(settings.time_moment_db_table_prefix, parsers)
 
     p = ThreadPool(len(parsers))
-    ready_parts_array = list(p.map(lambda par: par.find_parts(parts), parsers))
+    p.map(lambda par: par.find_parts(parts), parsers)
 
     print('start merging...')
     out_name = filename.split('.')[0].replace(' ', '_').replace(':', '_')
     tables = [parser.OUTPUT_FILE for parser in parsers]
     output_filename = merge_files(tables, out_name)
+
     print('finish')
     return output_filename
 

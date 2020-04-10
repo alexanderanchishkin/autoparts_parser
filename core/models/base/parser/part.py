@@ -4,7 +4,6 @@ from config import settings
 import time
 import traceback
 
-from core.io.xlsx import write_parts_to_xlsx
 from core.io.database.utilities.part import write_parts
 from core.models.part import Part
 

@@ -3,7 +3,6 @@ from config import settings
 
 from core.io.database.utilities import database
 from core.io.database.utilities import part
-from core.io.xlsx import write_report
 
 
 def report(start_date, end_date):
