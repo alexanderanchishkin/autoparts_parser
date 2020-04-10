@@ -141,7 +141,7 @@ class PartParser:
             traceback.print_exc()
 
         try:
-            write_parts_to_xlsx(self.OUTPUT_FILE, self.OUTPUT_TABLE, ready_parts, settings.TIME_MOMENT)
+            write_parts_to_xlsx(self.OUTPUT_FILE, self.OUTPUT_TABLE, ready_parts, settings.time_moment)
         except:
             traceback.print_exc()
 

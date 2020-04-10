@@ -7,7 +7,7 @@ from core.io.xlsx import write_report
 
 
 def report(start_date, end_date):
-    settings.TIME_MOMENT_NAME = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    settings.time_moment_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     all_parts = part.get_all_parts()
     articles = {part.get_id(): (part.article, part.brand) for part in all_parts}
     parts = database.get_tuples_tables(start_date, end_date)

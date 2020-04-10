@@ -47,7 +47,7 @@ def run_process(xlsx_name, filename, process='parse', start_date='', end_date=''
 
 
 def main():
-    out_folder = 'results'
+    out_folder = 'files/results'
     temp_folder = os.path.join(out_folder, 'tmp')
 
     if not os.path.exists(out_folder):
@@ -67,7 +67,7 @@ def main():
         with open('pipefile', 'w') as f:
             f.write('0')
 
-        directory = os.path.join('uploads', 'input.xlsx')
+        directory = os.path.join('files/uploads', 'input.xlsx')
         p = DummyProcess(target=run_process, args=(directory, 'по_расписанию'))
         p.start()
         settings.is_running = True

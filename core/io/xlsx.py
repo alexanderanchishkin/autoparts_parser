@@ -1,14 +1,10 @@
 import os.path
-import re
 from config import settings
 import time
 
 from openpyxl import load_workbook, Workbook
 from core.models.part import Part
-
-
-def has_cyrillic(text):
-    return bool(re.search('[а-яА-Я]', text))
+from core.utilities.value import has_cyrillic
 
 
 def read_parts_from_xlsx(xlsx_file, max_amount=int(1e+6)):
@@ -22,7 +18,7 @@ def read_parts_from_xlsx(xlsx_file, max_amount=int(1e+6)):
 
 
 def write_column_to_xlsx(xlsx_file, xlsx_table, time_moment):
-    xlsx_file_path = settings.OUTPUT_DIRECTORY + xlsx_file
+    xlsx_file_path = settings.TEMP_XLSX_DIRECTORY + xlsx_file
 
     if not os.path.exists(xlsx_file_path):
         create_xlsx(xlsx_file_path, xlsx_table)
@@ -42,7 +38,7 @@ def write_column_to_xlsx(xlsx_file, xlsx_table, time_moment):
 
 def write_parts_to_xlsx(xlsx_file, xlsx_table, parts, time_moment):
     return
-    xlsx_file_path = settings.OUTPUT_DIRECTORY + xlsx_file
+    xlsx_file_path = settings.TEMP_XLSX_DIRECTORY + xlsx_file
 
     if not os.path.exists(xlsx_file_path):
         create_xlsx(xlsx_file_path, xlsx_table)
@@ -105,7 +101,7 @@ def get_column_by_index(index):  # col is 1 based
 
 def merge_files(files, out_name):
     wb = Workbook()
-    folder = 'results'
+    folder = 'files/results'
     temp_folder = os.path.join(folder, 'tmp')
     for file in files:
         filename = os.path.join(temp_folder, file)
@@ -114,7 +110,7 @@ def merge_files(files, out_name):
         wb.create_sheet(file_ws.title)
         for row in file_ws.iter_rows(1, file_ws.max_row, 1, 4):
             wb[file_ws.title].append((ceil.value for ceil in row))
-    output_filename = f"{settings.TIME_MOMENT_NAME}_{out_name}.xlsx"
+    output_filename = f"{settings.time_moment_name}_{out_name}.xlsx"
     output_path = os.path.join(folder, output_filename)
     print(output_path)
     print(output_filename)
@@ -125,7 +121,7 @@ def merge_files(files, out_name):
 
 def write_report(parts, out_name):
     wb = Workbook()
-    folder = 'results'
+    folder = 'files/results'
     ws = wb.active
 
     ws.cell(1, 1).value = 'Артикул'
@@ -158,7 +154,7 @@ def write_report(parts, out_name):
     for col, value in dims.items():
         ws.column_dimensions[chr(ord('A') + col - 1)].width = value * 1.5
 
-    output_filename = f"{settings.TIME_MOMENT_NAME}_{out_name}.xlsx"
+    output_filename = f"{settings.time_moment_name}_{out_name}.xlsx"
     output_path = os.path.join(folder, output_filename)
     wb.save(output_path)
     return output_filename

@@ -11,33 +11,30 @@ from core.models.parsers.parterra import Parterra
 from core.io.xlsx import read_parts_from_xlsx, merge_files
 from core.io.database.utilities.table import create_tables
 
+from core.utilities import proxy
+
 from multiprocessing.dummy import Pool as ThreadPool
 
 
 def parse(xlsx_name, filename):
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    settings.TIME_MOMENT = datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
-    settings.TIME_MOMENT_NAME = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    proxy.load()
+    init_time()
 
-    time_moment_db_table_prefix = datetime.datetime.now().strftime("%Y%m%d__%H%M%S__")
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     input_xlsx = xlsx_name
 
-    parts = read_parts_from_xlsx(input_xlsx)
-    settings.max_parts = len(parts)
-    print(f'founded {settings.max_parts} parts.')
+    parts, count = read_parts_from_xlsx(input_xlsx)
 
-    parsers = [AvdMotors(0, sql_mode=True, table_prefix=time_moment_db_table_prefix),
-               Froza(1, sql_mode=True, table_prefix=time_moment_db_table_prefix),
-               AutoPiter(2, sql_mode=True, table_prefix=time_moment_db_table_prefix),
-               Mparts(3, sql_mode=True, table_prefix=time_moment_db_table_prefix),
-               Parterra(4, sql_mode=True, table_prefix=time_moment_db_table_prefix)]
+    print(f'founded {count} parts.')
 
-    # parsers = [Parterra(0, sql_mode=True, table_prefix=time_moment_db_table_prefix)]
+    parsers = [AvdMotors(),
+               Froza(),
+               AutoPiter(),
+               Mparts(),
+               Parterra()]
 
-    settings.progress_list = [0] * len(parsers)
-
-    create_tables(time_moment_db_table_prefix, parsers)
+    create_tables(settings.time_moment_db_table_prefix, parsers)
 
     p = ThreadPool(len(parsers))
     ready_parts_array = list(p.map(lambda par: par.find_parts(parts), parsers))
@@ -48,3 +45,12 @@ def parse(xlsx_name, filename):
     output_filename = merge_files(tables, out_name)
     print('finish')
     return output_filename
+
+
+def init_time():
+    now = datetime.datetime.now()
+
+    settings.time_moment_date = now
+    settings.time_moment = now.strftime("%d.%m.%Y %H:%M:%S")
+    settings.time_moment_name = now.strftime("%Y%m%d_%H%M%S")
+    settings.time_moment_db_table_prefix = now.strftime("%Y%m%d__%H%M%S__")

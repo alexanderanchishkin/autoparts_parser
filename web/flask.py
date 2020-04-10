@@ -19,11 +19,18 @@ from multiprocessing.dummy import DummyProcess
 from core.parse import parse
 from core.add import add
 from core.report import report
-from flask import current_app, Flask, render_template, request, send_from_directory
+from flask import current_app, Flask, render_template, request, send_from_directory, send_file
 
 app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
-app.config["UPLOAD_FOLDER"] = 'uploads'
+
+app.config["CONTENT_FOLDER"] = 'files'
+
+app.config["UPLOAD_FOLDER_NAME"] = 'uploads'
+app.config["UPLOAD_FOLDER"] = os.path.join(app.config["CONTENT_FOLDER"], app.config['UPLOAD_FOLDER_NAME'])
+
+app.config["RESULTS_FOLDER_NAME"] = 'results'
+app.config["RESULTS_FOLDER"] = os.path.join(app.config["CONTENT_FOLDER"], app.config['RESULTS_FOLDER_NAME'])
 
 p = None
 
@@ -50,7 +57,7 @@ def index():
 
     progresses = get_progresses()
 
-    link = '/results/'
+    link = app.config['RESULTS_FOLDER_NAME']
     reports = get_reports()
     default_start_date = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
     default_end_date = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -104,7 +111,7 @@ def make():
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-    out_folder = os.path.join(current_app.root_path, 'results')
+    out_folder = os.path.join(current_app.root_path, 'files/results')
     temp_folder = os.path.join(out_folder, 'tmp')
 
     if not os.path.exists(out_folder):
@@ -142,12 +149,12 @@ def make():
 
 @app.route('/results/<path:path>')
 def download_report(path):
-    return send_from_directory('results', path)
+    return send_from_directory(os.path.join('..', app.config['RESULTS_FOLDER']), path)
 
 
 @app.route('/uploads/<path:path>')
 def download_upload(path):
-    return send_from_directory('uploads', path)
+    return send_from_directory(os.path.join('..', app.config['UPLOAD_FOLDER']), path)
 
 
 def run_process(xlsx_name, filename, process='parse', start_date='', end_date=''):
@@ -194,8 +201,18 @@ def get_progresses():
 
     targets = ['АВД Моторс', 'Фроза', 'Автопитер', 'МПартс', 'Партерра']
     targets_progress_list = zip(targets, settings.progress_list)
-    return [f'{target[0]}: {round(target[1] * settings.max_parts)}\\{settings.max_parts}' for target in targets_progress_list]
+    return [f'{target[0]}: {round(target[1] * settings.max_parts)}\\{settings.max_parts}'
+            for target in targets_progress_list]
 
 
 def get_reports():
-    return sorted([name for name in os.listdir('../files/results') if os.path.isfile(os.path.join('results', name))])[::-1][:20]
+    filenames = get_results_from_directory()
+    return list(reversed(sorted(filter(is_result_file_exists, filenames))))[:20]
+
+
+def get_results_from_directory():
+    return os.listdir(app.config['RESULTS_FOLDER'])
+
+
+def is_result_file_exists(filename):
+    return os.path.isfile(os.path.join(app.config['RESULTS_FOLDER'], filename))
