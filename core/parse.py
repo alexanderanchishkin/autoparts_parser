@@ -2,6 +2,7 @@ from multiprocessing import dummy as thread
 
 from config import settings
 from core.io.xlsx import part as part_xlsx
+from core.io.xlsx import merge as merge_xlsx
 from core.io.database.utilities import table as table_db
 from core.models import parsers as parsers_
 from core.utilities import time as time_
@@ -45,7 +46,7 @@ def load_parsers():
 
 def run_parsers(parsers, parts, count, sql_output=True):
     if sql_output:
-        table_.create_tables(settings.time_moment_db_table_prefix, parsers)
+        table_db.create_tables(settings.time_moment_db_table_prefix, parsers)
 
     p = thread.Pool(len(parsers))
     p.map(run(parts, count), parsers)
@@ -56,7 +57,7 @@ def finalize_parts(filename, parsers):
 
     out_name = filename.split('.')[0].replace(' ', '_').replace(':', '_')
     tables = [parser.OUTPUT_FILE for parser in parsers]
-    output_filename = xlsx.merge.merge_files(tables, out_name)
+    output_filename = merge_xlsx.merge_files(tables, out_name)
 
     print('finish')
 
