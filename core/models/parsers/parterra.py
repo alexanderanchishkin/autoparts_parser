@@ -25,35 +25,34 @@ class Parterra(parser.GetParsePartParser):
         if html is None or not html:
             return Parterra.not_found(part)
 
-        try:
-            soup = bs4.BeautifulSoup(html, 'html.core')
-            min_title = soup.select_one('div.product-title > h1').get_text()
+        soup = bs4.BeautifulSoup(html, 'html.parser')
+        min_title_block = soup.select_one('div.product-title > h1')
+        if min_title_block is None:
+            return part.not_found(part)
+        min_title = min_title_block.get_text()
 
-            prices_block = soup.select_one('div.product-others')
-            if not prices_block or 'Аналоги' in prices_block:
-                return Parterra.not_found(part)
-
-            prices_html = prices_block.select('div.price')
-            if not prices_html:
-                return Parterra.not_found(part)
-
-            prices = [float(price.contents[0].replace(' ', '')) for price in prices_html]
-            span_price = soup.select_one('span.price')
-            if not span_price:
-                return Parterra.not_found(part)
-            main_price = span_price.contents[0].replace(' ', '')
-            prices.append(float(main_price))
-            prices = sorted(prices)
-            if len(prices) == 0:
-                raise Exception
-            if len(prices) == 1:
-                min_price = prices[0]
-            else:
-                min_price = prices[1]
-            ready_part = part_.Part(part.number, part.model, min_title, min_price)
-        except:
-            traceback.print_exc()
+        prices_block = soup.select_one('div.product-others')
+        if not prices_block or 'Аналоги' in prices_block:
             return Parterra.not_found(part)
+
+        prices_html = prices_block.select('div.price')
+        if not prices_html:
+            return Parterra.not_found(part)
+
+        prices = [float(price.contents[0].replace(' ', '')) for price in prices_html]
+        span_price = soup.select_one('span.price')
+        if not span_price:
+            return Parterra.not_found(part)
+        main_price = span_price.contents[0].replace(' ', '')
+        prices.append(float(main_price))
+        prices = sorted(prices)
+        if len(prices) == 0:
+            raise Exception
+        if len(prices) == 1:
+            min_price = prices[0]
+        else:
+            min_price = prices[1]
+        ready_part = part_.Part(part.number, part.model, min_title, min_price)
         return ready_part
 
     def prepare_model(self, model):

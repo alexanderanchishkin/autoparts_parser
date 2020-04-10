@@ -11,6 +11,5 @@ class Part:
 
     __repr__ = __str__
 
-    @classmethod
-    def not_found(cls, part):
-        return cls(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
+    def not_found(self):
+        return Part(self.number, self.model, 'Нет в наличии', 'Нет в наличии')
