@@ -9,9 +9,9 @@ from core.models.base.parser import parser
 from config import settings
 
 
-class AutoPiter(parser.Parser):
+class Autopiter(parser.Parser):
     OUTPUT_FILE = 'autopiter.xlsx'
-    OUTPUT_TABLE = 'AutoPiter'
+    OUTPUT_TABLE = 'Autopiter'
 
     NEED_AUTH = False
 
@@ -88,11 +88,11 @@ class AutoPiter(parser.Parser):
             settings.progress_list[self.id] = self.done / self.total
             time.sleep(max(self.DELAY - (time.time() - start_time), 0))
             if self.proxy_index == 0:
-                AutoPiter.ALL_SLEEP = True
+                Autopiter.ALL_SLEEP = True
                 # print('SLEEP')
                 # time.sleep(self.DELAY)
-                AutoPiter.ALL_SLEEP = False
-            while AutoPiter.ALL_SLEEP:
+                Autopiter.ALL_SLEEP = False
+            while Autopiter.ALL_SLEEP:
                 time.sleep(1)
 
     def parse_html(self, html, part):

@@ -28,7 +28,7 @@ def init():
 
 def load_parsers():
     return [
-        parsers_.autopiter.AutoPiter(),
+        parsers_.autopiter.Autopiter(),
         parsers_.avd_motors.AvdMotors(),
         parsers_.froza.Froza(),
         parsers_.mparts.Mparts(),

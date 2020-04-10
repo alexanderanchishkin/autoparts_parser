@@ -17,31 +17,8 @@ class PartParser(parser.Parser, abc.ABC):
     THREADS_COUNT = 0
 
     def find_parts(self, parts):
-        try:
-            self.get_part_html(parts[0])
-        except requests.exceptions.ProxyError:
-            settings.progress_list[self.id] = 1
-            return False
-
-        parts_chunks = (parts[i:i + min(len(parts), self.BUFFER_SIZE)] for i in range(0, len(parts), self.BUFFER_SIZE))
-        for parts_chunk in parts_chunks:
-            if settings.is_terminating:
-                print('Terminating...')
-                break
-
-            if self.MULTI_REQUEST:
-                p = thread.Pool(self.THREADS_COUNT)
-                ready_parts_array = list(p.map(self.find_one_part, parts_chunk))
-            else:
-                ready_parts_array = [self.find_one_part(part) for part in parts_chunk]
-            ready_parts = {part.number: part for part in ready_parts_array}
-            print('Saving...')
-
-            if settings.is_terminating:
-                print('Terminating...')
-                break
-
-            self.save_result(ready_parts)
+        # TODO: Realize
+        pass
 
     @abc.abstractmethod
     def find_one_part(self, part):
