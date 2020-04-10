@@ -10,3 +10,7 @@ class Part:
         return f'{self.number}, {self.model}, {self.title}, {self.price}'
 
     __repr__ = __str__
+
+    @classmethod
+    def not_found(cls, part):
+        return cls(part.number, part.model, 'Нет в наличии', 'Нет в наличии')

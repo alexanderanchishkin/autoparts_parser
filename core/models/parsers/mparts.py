@@ -1,43 +1,16 @@
 import re
 
 import bs4
-import requests
 
 from core.models import part as part_
-from core.models.base.parser import parser
+from core.models.base.parser import get_parse_part_parser as parser
 
 
-class Mparts(parser.Parser):
-    OUTPUT_FILE = 'mparts.xlsx'
-    OUTPUT_TABLE = 'Mparts'
-
-    NEED_AUTH = False
-
-    MULTI_REQUEST = True
-    THREADS_COUNT = 50
-
-    TIME_SLEEP = 0
-
+class Mparts(parser.GetParsePartParser):
     def get_part_html(self, part):
         url = f'https://www.v01.ru/auto/search/{part.number}/?brand_title={self.prepare_model(part.model)}'
-        proxies = self.get_next_proxies()
-        r = requests.post(url, verify=False, proxies=proxies, timeout=15)
+        r = self.request(url, method='POST')
         return r.text
-
-    def prepare_model(self, model):
-        up_model = model.upper()
-        if up_model == 'GENERAL MOTORS':
-            return 'GM'
-        if 'ROVER' in up_model:
-            return 'ROVER%2FLAND+ROVER'
-        if 'HYUNDAI' in up_model or 'KIA' in up_model:
-            return 'MOBIS'
-        if 'MERCEDE' in up_model:
-            return 'MERCEDES-BENZ'
-        return up_model.replace(' ', '+')
-
-    def login(self):
-        pass
 
     def parse_html(self, html, part):
         try:
@@ -50,5 +23,15 @@ class Mparts(parser.Parser):
             ready_part = part_.Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
         return ready_part
 
-
-
+    @staticmethod
+    def prepare_model(model):
+        up_model = model.upper()
+        if up_model == 'GENERAL MOTORS':
+            return 'GM'
+        if 'ROVER' in up_model:
+            return 'ROVER%2FLAND+ROVER'
+        if 'HYUNDAI' in up_model or 'KIA' in up_model:
+            return 'MOBIS'
+        if 'MERCEDE' in up_model:
+            return 'MERCEDES-BENZ'
+        return up_model.replace(' ', '+')
