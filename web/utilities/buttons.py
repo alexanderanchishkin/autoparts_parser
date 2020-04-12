@@ -10,17 +10,19 @@ from process import process as process_
 
 
 def check_buttons():
-    if flask.request.form.get('stop_button'):
-        _stop_button()
+    buttons = {
+        'stop': _stop_button,
+        'schedule': _schedule_rewrite_button,
+        'report': _report_button,
+        'parse': _parse_button
+    }
 
-    if flask.request.form.get('schedule_button'):
-        _schedule_rewrite_button()
+    [check_button(button_name, function) for button_name, function in buttons.items()]
 
-    if flask.request.form.get('report_button'):
-        _report_button()
 
-    if flask.request.form.get('parse_button'):
-        _parse_button()
+def check_button(button_name, function):
+    if flask.request.form.get(button_name + '_button'):
+        function()
 
 
 def _stop_button():

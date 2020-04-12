@@ -33,8 +33,6 @@ class PartParser(parser_.Parser, abc.ABC):
             if not settings.DEBUG:
                 print(f"{self.__class__.__name__}: {self.done}\\{self.total}\n", end='')
             return ready_part
-        except Exception as e:
-            return part_.Part(part.number, part.model, 'Нет в наличии', 'Нет в наличии')
         finally:
             self.handle_part(start_time)
 
