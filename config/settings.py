@@ -7,6 +7,7 @@ time_moment_db_table_prefix = None
 
 CONTENT_FOLDER = 'files'
 
+DEFAULT_PARSER_BUFFER_SIZE = 100
 DB_BUFFER_SIZE = 100
 
 RESULTS_FOLDER_NAME = 'results'

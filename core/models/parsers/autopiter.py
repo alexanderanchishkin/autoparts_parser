@@ -43,7 +43,11 @@ class Autopiter(part_parser.PartParser):
 
     @staticmethod
     def parse_html(html, part: part_.Part):
-        json_response = json.loads(html)
+        try:
+            json_response = json.loads(html)
+        except json.decoder.JSONDecodeError:
+            return None
+
         models = json_response['data']['catalogs']
 
         relevant_models = [model for model in models
@@ -78,7 +82,10 @@ class Autopiter(part_parser.PartParser):
 
     @staticmethod
     def _parse_cost(cost_html, article_id):
-        json_response = json.loads(cost_html)
+        try:
+            json_response = json.loads(cost_html)
+        except json.decoder.JSONDecodeError:
+            return None
 
         if 'data' not in json_response:
             print('error')

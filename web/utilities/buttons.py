@@ -77,7 +77,6 @@ def _check_folders():
 
     if os.path.exists(settings.TEMP_XLSX_DIRECTORY):
         shutil.rmtree(settings.TEMP_XLSX_DIRECTORY, onerror=_remove_readonly)
-        os.makedirs(settings.TEMP_XLSX_DIRECTORY)
 
     if not os.path.exists(settings.TEMP_XLSX_DIRECTORY):
         os.makedirs(settings.TEMP_XLSX_DIRECTORY)

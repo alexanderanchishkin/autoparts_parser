@@ -47,7 +47,7 @@ class Mparts(parser.GetParsePartParser):
         fn_block = soup.select_one('td.fn')
         if fn_block is None:
             return None
-        if 'title' not in fn_block:
+        if not hasattr(fn_block, 'title'):
             return None
         min_title = fn_block['title']
         return min_title

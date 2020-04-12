@@ -23,7 +23,11 @@ class Froza(parser.GetParsePartParser):
 
     @staticmethod
     def parse_html(html, part):
-        json_response = json.loads(html)
+        try:
+            json_response = json.loads(html)
+        except json.decoder.JSONDecodeError:
+            return None
+
         block = json_response['data']
         if not block:
             return part.not_found()

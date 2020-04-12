@@ -51,6 +51,9 @@ class Parterra(parser.GetParsePartParser):
 
     @staticmethod
     def prepare_model(model):
+        if model is None:
+            return None
+
         up_model = model.upper()
         if up_model == 'GENERAL MOTORS':
             return 'GM'
@@ -78,6 +81,11 @@ class Parterra(parser.GetParsePartParser):
 
         suggestions = json_response['suggestions']
         for suggestion in suggestions:
+            if 'value' not in suggestion:
+                continue
+            if 'href' not in suggestion:
+                continue
+
             suggestion_value = Parterra._prepare_string(suggestion['value'])
 
             if part.number.replace(' ', '').upper() in suggestion_value \

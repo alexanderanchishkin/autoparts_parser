@@ -13,7 +13,7 @@ from process import process as process_
 
 
 class Parser(abc.ABC):
-    BUFFER_SIZE = 100
+    BUFFER_SIZE = settings.DEFAULT_PARSER_BUFFER_SIZE
     OUTPUT_FILE = None
 
     DELAY = 0
@@ -80,6 +80,8 @@ class Parser(abc.ABC):
 
                 if not retry or r.status_code == 200:
                     return r
+            except requests.exceptions.ConnectionError:
+                pass
             except requests.exceptions.ReadTimeout:
                 pass
 

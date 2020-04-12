@@ -23,6 +23,9 @@ def write_parts(table_name: str, parts: list):
 
 
 def insert_parts(table_name: str, parts: list):
+    if not parts:
+        return
+
     # noinspection SqlResolve
     query_start = f"INSERT INTO `{table_name}` (`article_id`, `price`) VALUES"
     parts_values = [prepare_part_values(part) for part in parts]
