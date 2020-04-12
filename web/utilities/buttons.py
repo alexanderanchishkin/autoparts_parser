@@ -1,6 +1,7 @@
 import os
 import shutil
 import stat
+import sys
 
 import flask
 
@@ -19,10 +20,11 @@ def check_button(process):
     if flask.request.form.get(button_name):
         button_function_name = f'_{process}_button'
 
-        if button_function_name not in locals():
+        button_function = getattr(sys.modules[__name__], button_function_name, None)
+
+        if button_function is None:
             return
 
-        button_function = locals()[button_function_name]
         button_function()
 
 
@@ -51,7 +53,7 @@ def _report_button():
 
 
 def _parse_button():
-    if process_.get_current_processes() is not None:
+    if process_.get_current_processes():
         return
 
     parse_file = flask.request.files['file']
@@ -61,7 +63,7 @@ def _parse_button():
 
     _check_folders()
 
-    parse_file.save(os.path.join(settings.RESULTS_FOLDER, parse_file.filename))
+    parse_file.save(os.path.join(settings.UPLOAD_FOLDER, parse_file.filename))
     xlsx_name = os.path.join(settings.UPLOAD_FOLDER, parse_file.filename)
     checkboxes.check_checkboxes(xlsx_name, parse_file.filename)
 

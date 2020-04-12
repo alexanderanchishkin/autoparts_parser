@@ -1,5 +1,6 @@
 import multiprocessing
 import os
+import sys
 import time
 
 from config import settings
@@ -10,7 +11,7 @@ from core import schedule
 
 
 def start(process, xlsx_name=None, filename=None, start_date=None, end_date=None):
-    multiprocessing.Process(target=_run, args=(process, xlsx_name, filename, start_date, end_date))
+    multiprocessing.Process(target=_run, args=(process, xlsx_name, filename, start_date, end_date)).start()
 
 
 def _run(process, xlsx_name=None, filename=None, start_date=None, end_date=None):
@@ -66,7 +67,7 @@ def create_pipefile(process):
 def update_pipefile(process, data):
     pipefile = _get_pipefile_path(process)
     with open(pipefile, 'w') as f:
-        f.write(data)
+        f.write(str(data))
 
 
 def remove_pipefile(process):
@@ -78,7 +79,11 @@ def remove_pipefile(process):
 def _get_pipefile_path(filename):
     return os.path.join(settings.INTER_PROCESS_DIRECTORY, filename)
 
+
 def get_working_file():
+    if not os.path.isfile(settings.WORKING_FILE):
+        return None
+
     with open(settings.WORKING_FILE, 'r') as f:
         return f.read()
 
@@ -90,10 +95,15 @@ def create_working_file(xlsx_name):
     if not os.path.isdir(settings.WORKING_FILES_DIRECTORY):
         os.mkdir(settings.WORKING_FILES_DIRECTORY)
 
-    with open(settings.WORKING_FILE, 'r') as f:
+    with open(settings.WORKING_FILE, 'w') as f:
         f.write(xlsx_name)
 
 
 def remove_working_file():
-    if os.path.isfile(settings.WORKING_FILE):
-        os.remove(settings.WORKING_FILE)
+    if get_current_processes():
+        return
+
+    if not os.path.isfile(settings.WORKING_FILE):
+        return
+
+    os.remove(settings.WORKING_FILE)

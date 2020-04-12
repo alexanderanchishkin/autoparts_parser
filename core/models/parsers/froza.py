@@ -17,6 +17,8 @@ class Froza(parser.GetParsePartParser):
               f'multi=1&detail_num={part.number}&make_name={part.model}' \
               f'&country=10&region_id=0&discount_id=258&sort=sortByPrice&add_warehouse='
         r = self.request(url, retry=True)
+        if r is None:
+            return None
         return r.text
 
     @staticmethod

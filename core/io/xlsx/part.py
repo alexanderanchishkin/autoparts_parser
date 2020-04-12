@@ -1,4 +1,5 @@
 from typing import Iterator
+import os
 
 import openpyxl
 import openpyxl.utils.exceptions
@@ -27,18 +28,18 @@ def read_parts_iter(xlsx_file) -> (Iterator, int):
     start_row = 2 if ws.max_row > 1 and (value.has_cyrillic(ws[1][0].value) or not ws[1][0].value) else 1
 
     iter_parts = _build_parts_iterator(ws, start_row)
-    parts_count = ws.max_row - start_row
+    parts_count = ws.max_row - start_row + 1
     return iter_parts, parts_count
 
 
-def start_write_parts(time_moment):
+def start_write_parts(time_moment, table_name):
     headers = ['Артикул', 'Бренд', 'Наименование', time_moment]
-    return xlsx.start_write_xlsx(headers)
+    return xlsx.start_write_xlsx(headers, table_name)
 
 
 def save_temp_parts(wb, out_name):
-    xlsx_file_path = settings.TEMP_XLSX_DIRECTORY + out_name
-    xlsx.save_time_xlsx(wb, xlsx_file_path)
+    xlsx_file_path = os.path.join(settings.TEMP_XLSX_DIRECTORY, out_name)
+    wb.save(xlsx_file_path)
 
 
 def write_parts_to_xlsx(ws, parts: list):

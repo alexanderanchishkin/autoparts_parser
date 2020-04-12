@@ -3,7 +3,10 @@ import re
 
 
 def get_next_parts(iter_parts, n: int) -> list:
-    return list(itertools.islice(iter_parts, n))
+    try:
+        return list(itertools.islice(iter_parts, n))
+    except ValueError:
+        return []
 
 
 def equal_models(self, model1, model2):

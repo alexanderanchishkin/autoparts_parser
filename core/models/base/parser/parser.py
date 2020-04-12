@@ -1,6 +1,7 @@
 import abc
 
 import requests
+import stringcase
 
 from config import settings
 from core.io.database.utilities import part as part_db
@@ -27,7 +28,7 @@ class Parser(abc.ABC):
         self.sql_output = sql_output
 
         self.table_prefix = settings.time_moment_db_table_prefix
-        self.table_name = self.table_prefix + parser_.get_output_filename(self).split('.')[0]
+        self.table_name = self.table_prefix + self.get_output_filename().split('.')[0]
 
         self.current_proxies = None
         self.proxies = []
@@ -47,12 +48,12 @@ class Parser(abc.ABC):
         self._initialize()
 
         if self.xlsx_output:
-            self.wb = part_xlsx.start_write_parts(settings.time_moment)
+            self.wb = part_xlsx.start_write_parts(settings.time_moment, self.__class__.__name__)
 
         ready_parts = self.find_parts(iter_parts)
 
         if self.xlsx_output and self.wb is not None:
-            part_xlsx.save_temp_parts(self.wb, parser_.get_output_filename(self))
+            part_xlsx.save_temp_parts(self.wb, self.get_output_filename())
         return ready_parts
 
     def _initialize(self):
@@ -74,11 +75,18 @@ class Parser(abc.ABC):
             if proxies is None:
                 proxies = self.get_next_proxies()
 
-            r = requests.request(method, url, headers=headers, proxies=proxies, verify=verify, timeout=timeout)
+            try:
+                r = requests.request(method, url, headers=headers, proxies=proxies, verify=verify, timeout=timeout)
+
+                if not retry or r.status_code == 200:
+                    return r
+            except requests.exceptions.ReadTimeout:
+                pass
+
             attempts_count += 1
 
-            if not retry or r.status_code == 200 or attempts_count == attempts:
-                return r
+            if attempts_count == attempts:
+                return None
 
     def get_next_proxies(self):
         proxy = proxy_.prepare_proxy(self.proxies[self.proxy_index])
@@ -88,6 +96,11 @@ class Parser(abc.ABC):
     def print_progress(self):
         # TODO: pipefiles
         print(f"{self.__class__.__name__}: {self.done}\\{self.total}\n", end='')
+
+    def get_output_filename(self) -> str:
+        if self.OUTPUT_FILE is not None:
+            return self.OUTPUT_FILE
+        return stringcase.snakecase(self.__class__.__name__) + '.xlsx'
 
     @staticmethod
     def get_headers():

@@ -4,12 +4,18 @@ import os.path
 from config import settings
 
 
-def start_write_xlsx(header_rows=None):
+def start_write_xlsx(header_rows=None, table_name='Отчёт'):
     wb = openpyxl.Workbook(write_only=True)
-    ws = wb.create_sheet('Отчёт')
+    ws = wb.create_sheet(table_name)
 
     if header_rows is None:
         return wb
+
+    if not header_rows:
+        return wb
+
+    if isinstance(header_rows[0], str):
+        header_rows = [header_rows]
 
     [ws.append(row) for row in header_rows]
 

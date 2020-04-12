@@ -10,14 +10,19 @@ class Parterra(parser.GetParsePartParser):
     def get_part_html(self, part):
         url = f'http://parterra.ru/utils/?action=search&term={part.number} {self.prepare_model(part.model)}'
         r = self.request(url, method='POST')
+        if r is None:
+            return None
 
         url2 = self._parse_part_url(r, part)
 
         if url2 is None:
             return None
 
-        r = self.request(url2)
-        return r.text
+        r1 = self.request(url2)
+        if r1 is None:
+            return None
+
+        return r1.text
 
     @staticmethod
     def parse_html(html, part):
@@ -65,7 +70,7 @@ class Parterra(parser.GetParsePartParser):
     def _parse_part_url(r, part):
         try:
             json_response = json.loads(r.text)
-        except json.JSONDecodeError:
+        except json.decoder.JSONDecodeError:
             return None
 
         if 'suggestions' not in json_response:

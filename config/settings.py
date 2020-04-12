@@ -7,10 +7,12 @@ time_moment_db_table_prefix = None
 
 CONTENT_FOLDER = 'files'
 
+DB_BUFFER_SIZE = 100
+
 RESULTS_FOLDER_NAME = 'results'
 RESULTS_FOLDER = os.path.join(CONTENT_FOLDER, RESULTS_FOLDER_NAME)
 
-UPLOAD_FOLDER_NAME = 'upload'
+UPLOAD_FOLDER_NAME = 'uploads'
 UPLOAD_FOLDER = os.path.join(CONTENT_FOLDER, UPLOAD_FOLDER_NAME)
 
 TEMP_XLSX_NAME = 'tmp'
@@ -28,3 +30,5 @@ WORKING_FILENAME = 'working_file'
 WORKING_FILE = os.path.join(WORKING_FILES_DIRECTORY, WORKING_FILENAME)
 
 PROCESSES = ['add', 'parse', 'schedule', 'stop']
+
+PROXY_FILE = os.path.join('config', 'proxies.txt')

@@ -15,7 +15,11 @@ class AvdMotors(parser.GetParsePartParser):
               f'{part.number.split("#")[0]}&catalog={AvdMotors.prepare_model(part.model)}'
         url2 = f'https://www.avdmotors.ru/price/clones'
         r = self.request(url, method='POST')
+        if r is None:
+            return None
         r1 = self.request(url2, method='POST')
+        if r1 is None:
+            return None
         return r.text + '!^^!' + r1.text
 
     @staticmethod
@@ -23,8 +27,8 @@ class AvdMotors(parser.GetParsePartParser):
         response1, response2 = html.split('!^^!')
         try:
             json_response = json.loads(response1)
-        except json.JSONDecodeError:
-            return AvdMotors._handle_error(part)
+        except json.decoder.JSONDecodeError:
+            return AvdMotors._handle_error(part, response1)
 
         if 'data' not in json_response:
             return part.not_found()
@@ -52,7 +56,7 @@ class AvdMotors(parser.GetParsePartParser):
         try:
             json_response = json.loads(response2)
             clones = json_response['data']
-        except json.JSONDecodeError:
+        except json.decoder.JSONDecodeError:
             return AvdMotors._handle_error(part)
 
         if not clones:
@@ -109,7 +113,8 @@ class AvdMotors(parser.GetParsePartParser):
         return up_model
 
     @staticmethod
-    def _handle_error(part: part_.Part):
+    def _handle_error(part: part_.Part, response):
         print('AVDMotors: ')
+        print(response)
         traceback.print_exc()
         return part.not_found()

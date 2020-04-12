@@ -10,6 +10,5 @@ def check_checkboxes(xlsx_name, filename):
 
 def _check_checkbox(process, xlsx_name, filename):
     checkbox_name = process + '_checkbox'
-
-    if flask.request.form.get(checkbox_name):
-        process_.start(checkbox_name, xlsx_name, filename)
+    if flask.request.form.get(checkbox_name) is not None:
+        process_.start(process, xlsx_name, filename)

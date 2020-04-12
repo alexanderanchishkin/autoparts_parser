@@ -6,7 +6,7 @@ def create_tables(table_prefix, parsers):
 
 
 def create_table(table_prefix, parser):
-    table_name = table_prefix + parser.OUTPUT_FILE.split('.')[0].lower()
+    table_name = table_prefix + parser.get_output_filename().split('.')[0].lower()
     query = f"CREATE TABLE {table_name} LIKE generic"
     database.db.execute_sql(query)
     return table_name

@@ -20,18 +20,25 @@ class Autopiter(part_parser.PartParser):
 
         cost_html = self._get_cost_html(article_id)
         cost = Autopiter._parse_cost(cost_html, article_id)
-        ready_part.price = cost
 
+        if cost is None:
+            return ready_part.not_found()
+
+        ready_part.price = cost
         return ready_part
 
     def get_part_html(self, part):
         url = f'https://32.autopiter.ru/api/searchdetails?detailNumber={part.number}'
         r = self.request(url)
+        if r is None:
+            return None
         return r.text
 
     def _get_cost_html(self, article_id):
         url = f'https://32.autopiter.ru/api/appraise?id={article_id}&searchType=1'
         r = self.request(url)
+        if r is None:
+            return None
         return r.text
 
     @staticmethod
@@ -76,14 +83,14 @@ class Autopiter(part_parser.PartParser):
         if 'data' not in json_response:
             print('error')
             print(json_response)
-            raise Exception
+            return None
 
         stores = json_response['data']
         costs = Autopiter._get_unique_costs_from_stores(stores, article_id)
         sorted_costs = sorted(costs)
 
         if len(sorted_costs) == 0:
-            raise Exception
+            return None
 
         return sorted_costs[1] if len(sorted_costs) > 1 else sorted_costs[0]
 

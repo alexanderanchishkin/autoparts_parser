@@ -10,13 +10,15 @@ class Mparts(parser.GetParsePartParser):
     def get_part_html(self, part):
         url = f'https://www.v01.ru/auto/search/{part.number}/?brand_title={self.prepare_model(part.model)}'
         r = self.request(url, method='POST')
+        if r is None:
+            return None
         return r.text
 
     def parse_html(self, html, part):
         if html is None or not html:
             return part.not_found()
 
-        soup = bs4.BeautifulSoup(html, 'html.core')
+        soup = bs4.BeautifulSoup(html, 'html.parser')
 
         min_title = Mparts._get_min_title(soup)
         min_price = Mparts._get_min_price(soup)
