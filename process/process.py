@@ -1,6 +1,5 @@
 import multiprocessing
 import os
-import time
 
 from config import settings
 from core import add
@@ -13,31 +12,24 @@ def start(process, xlsx_name=None, filename=None, start_date=None, end_date=None
 
 
 def _run(process, xlsx_name=None, filename=None, start_date=None, end_date=None):
-    try:
-        print(f'start process {process}')
-        settings.working_file = filename
+    print(f'start process {process}')
 
-        while settings.is_running:
-            time.sleep(1)
+    if process == 'add':
+        add.add(xlsx_name)
+    if process == 'report':
+        report.report(start_date, end_date)
+    if process == 'parse':
+        with open('pipefile2', 'w') as f:
+            pass
+        parse.parse(xlsx_name, filename)
 
-        settings.is_running = True
+    if os.path.isfile('pipefile2'):
+        os.remove('pipefile2')
 
-        if process == 'add':
-            return add.add(xlsx_name)
-        if process == 'report':
-            return report.report(start_date, end_date)
-        if process == 'parse':
-            with open('pipefile2', 'w') as f:
-                pass
-            return parse.parse(xlsx_name, filename)
-        return 'Nothing'
-    finally:
-        print('finish process')
-        if os.path.isfile('pipefile2'):
-            os.remove('pipefile2')
+    print(f'finish process {process}')
 
 
-def get_current_process():
+def get_current_processes():
     pipefiles_directory = settings.INTER_PROCESS_DIRECTORY
     processes = settings.PROCESSES
 
@@ -45,13 +37,12 @@ def get_current_process():
     exists_pipefiles = [pipefile for pipefile in pipefiles if os.path.isfile(pipefile)]
 
     if not exists_pipefiles:
-        return None
+        return []
 
     if len(exists_pipefiles) > 1:
         print('Несколько процессов одновременно: ', ', '.join(exists_pipefiles))
-        return exists_pipefiles[0]
 
-    return exists_pipefiles[0]
+    return exists_pipefiles
 
 
 def read_pipefile(filename):
@@ -59,3 +50,6 @@ def read_pipefile(filename):
     pipefile = os.path.join(pipefiles_directory, filename)
     with open(pipefile, 'r') as f:
         return f.read()
+
+def get_working_file():
+    working_files_directory = settings.WORKING_FILES_DIRECTORY

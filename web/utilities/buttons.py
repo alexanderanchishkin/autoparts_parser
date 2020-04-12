@@ -10,26 +10,27 @@ from web.utilities import checkboxes
 
 
 def check_buttons():
-    buttons = {
-        'stop': _stop_button,
-        'schedule': _schedule_rewrite_button,
-        'report': _report_button,
-        'parse': _parse_button
-    }
-
-    [check_button(button_name, function) for button_name, function in buttons.items()]
+    [check_button(process) for process in settings.PROCESSES]
 
 
-def check_button(button_name, function):
-    if flask.request.form.get(button_name + '_button'):
-        function()
+def check_button(process):
+    button_name = process + '_button'
+
+    if flask.request.form.get(button_name):
+        button_function_name = f'_{process}_button'
+
+        if button_function_name not in locals():
+            return
+
+        button_function = locals()[button_function_name]
+        button_function()
 
 
 def _stop_button():
     settings.is_terminating = True
 
 
-def _schedule_rewrite_button():
+def _schedule_button():
     schedule_file = flask.request.files['schedule_file']
 
     if not schedule_file:
@@ -50,7 +51,7 @@ def _report_button():
 
 
 def _parse_button():
-    if process_.get_current_process() is not None:
+    if process_.get_current_processes() is not None:
         return
 
     parse_file = flask.request.files['file']

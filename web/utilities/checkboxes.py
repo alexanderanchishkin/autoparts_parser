@@ -1,14 +1,15 @@
 import flask
 
+from config import settings
 from process import process as process_
 
 
 def check_checkboxes(xlsx_name, filename):
-    checkboxes = ['add', 'parse']
-
-    [_check_checkbox(checkbox_name, xlsx_name, filename) for checkbox_name in checkboxes]
+    [_check_checkbox(process, xlsx_name, filename) for process in settings.PROCESSES]
 
 
-def _check_checkbox(checkbox_name, xlsx_name, filename):
-    if flask.request.form.get(checkbox_name + '_checkbox'):
+def _check_checkbox(process, xlsx_name, filename):
+    checkbox_name = process + '_checkbox'
+
+    if flask.request.form.get(checkbox_name):
         process_.start(checkbox_name, xlsx_name, filename)

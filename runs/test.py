@@ -1,19 +1,10 @@
-from core.utilities import stopwatch
+from config import settings
+from process import process as process_
 
 
 def main():
-    TestMore().test(0)
-
-
-class TestClass:
-    @stopwatch.time(__qualname__)
-    def test(self, a):
-        for _ in range(1, 100000):
-            a += 1
-
-
-class TestMore(TestClass):
-    pass
+    xlsx_name = settings.SCHEDULE_FILEPATH
+    process_.start('parse', xlsx_name, 'по расписанию')
 
 
 if __name__ == '__main__':

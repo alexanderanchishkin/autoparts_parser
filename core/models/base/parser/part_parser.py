@@ -1,9 +1,7 @@
 import abc
 import time
 
-from config import settings
 from core.models.base.parser import parser as parser_
-from core.models import part as part_
 from core.utilities import part as part_utilities
 from core.utilities import parser as parser_utilities
 
@@ -11,8 +9,6 @@ from multiprocessing import dummy as thread
 
 
 class PartParser(parser_.Parser, abc.ABC):
-    MULTI_REQUEST = False
-    THREADS_COUNT = 0
 
     def find_parts(self, iter_parts):
         while True:
@@ -27,14 +23,10 @@ class PartParser(parser_.Parser, abc.ABC):
 
     def try_find_one_part(self, part):
         start_time = time.time()
-        try:
-            ready_part = self.find_one_part(part)
-
-            if not settings.DEBUG:
-                print(f"{self.__class__.__name__}: {self.done}\\{self.total}\n", end='')
-            return ready_part
-        finally:
-            self.handle_part(start_time)
+        ready_part = self.find_one_part(part)
+        self.handle_part(start_time)
+        self.print_progress()
+        return ready_part
 
     def handle_part(self, start_time):
         self.done += 1

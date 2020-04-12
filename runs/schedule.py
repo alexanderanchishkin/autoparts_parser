@@ -2,6 +2,9 @@ import datetime
 import os
 import time
 
+from config import settings
+from process import process as process_
+
 
 def main():
     _init()
@@ -24,8 +27,8 @@ def _check_time():
 
 
 def _start_parse_schedule():
-    # TODO: start parse schedule
-    pass
+    xlsx_name = settings.SCHEDULE_FILEPATH
+    process_.start('parse', xlsx_name, 'по расписанию')
 
 
 if __name__ == '__main__':

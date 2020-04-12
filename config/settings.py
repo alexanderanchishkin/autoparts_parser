@@ -1,7 +1,5 @@
 import os
 
-DEBUG = 0
-
 time_moment_date = None
 time_moment = None
 time_moment_name = None
@@ -19,11 +17,11 @@ TEMP_XLSX_NAME = 'tmp'
 TEMP_XLSX_DIRECTORY = os.path.join(RESULTS_FOLDER, TEMP_XLSX_NAME)
 
 SCHEDULE_FILENAME = 'input.xlsx'
+SCHEDULE_FILEPATH = os.path.join(UPLOAD_FOLDER, SCHEDULE_FILENAME)
 
-INTER_PROCESS_DIRECTORY = os.path.join('process', 'process_pipefiles')
-PROCESSES = ['add', 'parse', 'schedule']
+PROCESS_DIRECTORY = 'process'
 
-is_running = False
-is_terminating = False
+INTER_PROCESS_DIRECTORY = os.path.join(PROCESS_DIRECTORY, 'process_pipefiles')
+WORKING_FILES_DIRECTORY = os.path.join(PROCESS_DIRECTORY, 'working_files')
 
-working_file = None
+PROCESSES = ['add', 'parse', 'schedule', 'stop']

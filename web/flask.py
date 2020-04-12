@@ -6,16 +6,18 @@ import flask
 from config import settings
 from web.utilities import buttons
 from web.utilities import reports as reports_
-from process.utilities import schedule as schedule_, progress as progress_
+from process import process as process_
+from process.utilities import progress as progress_
+from process.utilities import schedule as schedule_
 
 app = flask.Flask(__name__)
 
 
 @app.route('/', methods=['GET'])
 def index():
-    is_running = settings.is_running
-    is_terminating = settings.is_terminating
-    working_file = settings.working_file
+    is_running = bool(process_.get_current_processes())
+    is_terminating = 'stop' in process_.get_current_processes()
+    working_file = process_.get_working_file()
 
     current_progress_bar = progress_.calculate_progress()
     progresses = progress_.get_progresses()

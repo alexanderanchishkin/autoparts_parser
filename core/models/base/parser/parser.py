@@ -84,6 +84,9 @@ class Parser(abc.ABC):
         self.proxy_index = (self.proxy_index + 1) % len(self.proxies)
         return proxy
 
+    def print_progress(self):
+        print(f"{self.__class__.__name__}: {self.done}\\{self.total}\n", end='')
+
     @staticmethod
     def get_headers():
         return {}
