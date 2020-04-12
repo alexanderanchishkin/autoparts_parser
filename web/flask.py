@@ -4,12 +4,9 @@ import os
 import flask
 
 from config import settings
-from core.utilities import value
-from process import process
 from web.utilities import buttons
-from web.utilities import progress as progress_
 from web.utilities import reports as reports_
-from web.utilities import schedule as schedule_
+from process.utilities import schedule as schedule_, progress as progress_
 
 app = flask.Flask(__name__)
 
