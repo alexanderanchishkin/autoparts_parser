@@ -11,19 +11,20 @@ from multiprocessing import dummy as thread
 class PartParser(parser_.Parser, abc.ABC):
     def find_parts(self, iter_parts):
         while True:
-            with part_utilities.get_next_parts(iter_parts, self.BUFFER_SIZE) as parts_chunk:
-                if not parts_chunk:
-                    break
+            parts_chunk = part_utilities.get_next_parts(iter_parts, self.BUFFER_SIZE)
 
-                with thread.Pool(len(parts_chunk)) as p:
-                    with p.map(self.try_find_one_part, parts_chunk) as ready_parts:
-                        self.save_result(ready_parts)
+            if not parts_chunk:
+                break
+
+            p = thread.Pool(len(parts_chunk))
+            ready_parts = p.map(self.try_find_one_part, parts_chunk)
+            self.save_result(ready_parts)
 
     def try_find_one_part(self, part):
         start_time = time.time()
-        with self.find_one_part(part) as ready_part:
-            self.handle_part(start_time)
-            return ready_part
+        ready_part = self.find_one_part(part)
+        self.handle_part(start_time)
+        return ready_part
 
     def handle_part(self, start_time):
         self.done += 1
