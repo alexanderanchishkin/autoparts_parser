@@ -28,7 +28,7 @@ def _check_time():
 
 def _start_parse_schedule():
     xlsx_name = settings.SCHEDULE_FILEPATH
-    process_.start('parse', xlsx_name, 'по расписанию')
+    process_.start('schedule', xlsx_name, 'по расписанию')
 
 
 if __name__ == '__main__':

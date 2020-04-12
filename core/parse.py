@@ -10,7 +10,7 @@ from core.utilities import warning
 
 
 def parse(xlsx_name, filename, sql_output=True, source='xlsx'):
-    init()
+    _init()
 
     parts, count = _get_parts_iter(source, xlsx=xlsx_name)
     print(f'founded {count} parts.')
@@ -29,7 +29,8 @@ def _get_parts_iter(source, **kwargs):
         return None, 0
     return None, 0
 
-def init():
+
+def _init():
     time_.init_time()
     warning.init_warnings()
 
@@ -49,22 +50,22 @@ def run_parsers(parsers, parts, count, sql_output=True):
         table_db.create_tables(settings.time_moment_db_table_prefix, parsers)
 
     p = thread.Pool(len(parsers))
-    p.map(run(parts, count), parsers)
+    p.map(_run(parts, count), parsers)
 
 
 def finalize_parts(filename, parsers):
-    print('start merging...')
+    print(f'start merging to {filename}')
 
     out_name = filename.split('.')[0].replace(' ', '_').replace(':', '_')
     tables = [parser.OUTPUT_FILE for parser in parsers]
     output_filename = merge_xlsx.merge_files(tables, out_name)
 
-    print('finish')
+    print(f'finish merging {filename}')
 
     return output_filename
 
 
-def run(parts, count):
+def _run(parts, count):
     def run_parser(parser):
         parser.execute(parts, count)
     return run_parser

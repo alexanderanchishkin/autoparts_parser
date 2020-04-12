@@ -1,10 +1,12 @@
 import multiprocessing
 import os
+import time
 
 from config import settings
 from core import add
 from core import parse
 from core import report
+from core import schedule
 
 
 def start(process, xlsx_name=None, filename=None, start_date=None, end_date=None):
@@ -14,17 +16,23 @@ def start(process, xlsx_name=None, filename=None, start_date=None, end_date=None
 def _run(process, xlsx_name=None, filename=None, start_date=None, end_date=None):
     print(f'start process {process}')
 
+    if get_current_processes():
+        time.sleep(10)
+
+    create_working_file(xlsx_name)
+    create_pipefile(process)
+
     if process == 'add':
         add.add(xlsx_name)
+    if process == 'parse':
+        parse.parse(xlsx_name, filename)
     if process == 'report':
         report.report(start_date, end_date)
-    if process == 'parse':
-        with open('pipefile2', 'w') as f:
-            pass
-        parse.parse(xlsx_name, filename)
+    if process == 'schedule':
+        schedule.schedule(xlsx_name, filename)
 
-    if os.path.isfile('pipefile2'):
-        os.remove('pipefile2')
+    remove_pipefile(process)
+    remove_working_file()
 
     print(f'finish process {process}')
 
@@ -46,10 +54,46 @@ def get_current_processes():
 
 
 def read_pipefile(filename):
-    pipefiles_directory = settings.INTER_PROCESS_DIRECTORY
-    pipefile = os.path.join(pipefiles_directory, filename)
+    pipefile = _get_pipefile_path(filename)
     with open(pipefile, 'r') as f:
         return f.read()
 
+
+def create_pipefile(process):
+    update_pipefile(process, 0)
+
+
+def update_pipefile(process, data):
+    pipefile = _get_pipefile_path(process)
+    with open(pipefile, 'w') as f:
+        f.write(data)
+
+
+def remove_pipefile(process):
+    pipefile = _get_pipefile_path(process)
+    if os.path.isfile(pipefile):
+        os.remove(pipefile)
+
+
+def _get_pipefile_path(filename):
+    return os.path.join(settings.INTER_PROCESS_DIRECTORY, filename)
+
 def get_working_file():
-    working_files_directory = settings.WORKING_FILES_DIRECTORY
+    with open(settings.WORKING_FILE, 'r') as f:
+        return f.read()
+
+
+def create_working_file(xlsx_name):
+    if xlsx_name is None:
+        return
+
+    if not os.path.isdir(settings.WORKING_FILES_DIRECTORY):
+        os.mkdir(settings.WORKING_FILES_DIRECTORY)
+
+    with open(settings.WORKING_FILE, 'r') as f:
+        f.write(xlsx_name)
+
+
+def remove_working_file():
+    if os.path.isfile(settings.WORKING_FILE):
+        os.remove(settings.WORKING_FILE)

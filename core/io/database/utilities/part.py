@@ -2,8 +2,8 @@ from core.io.database import models, database
 from core.utilities import value
 
 
-def get_all_parts():
-    return models.Article.select()
+def get_iter_parts():
+    return models.Article.select().iterator()
 
 
 def add_parts(parts):

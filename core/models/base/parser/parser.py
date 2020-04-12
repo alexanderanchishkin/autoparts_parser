@@ -8,6 +8,7 @@ from core.io.xlsx import part as part_xlsx
 from core.utilities import parser as parser_
 from core.utilities import proxy as proxy_
 from core.utilities import stopwatch
+from process import process as process_
 
 
 class Parser(abc.ABC):
@@ -43,7 +44,7 @@ class Parser(abc.ABC):
             return False
 
         self.total = count
-        self.initialize()
+        self._initialize()
 
         if self.xlsx_output:
             self.wb = part_xlsx.start_write_parts(settings.time_moment)
@@ -54,7 +55,7 @@ class Parser(abc.ABC):
             part_xlsx.save_temp_parts(self.wb, parser_.get_output_filename(self))
         return ready_parts
 
-    def initialize(self):
+    def _initialize(self):
         self.done = 0
         self.proxies = proxy_.load()
 
@@ -85,6 +86,7 @@ class Parser(abc.ABC):
         return proxy
 
     def print_progress(self):
+        # TODO: pipefiles
         print(f"{self.__class__.__name__}: {self.done}\\{self.total}\n", end='')
 
     @staticmethod

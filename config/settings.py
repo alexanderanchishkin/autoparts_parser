@@ -22,6 +22,9 @@ SCHEDULE_FILEPATH = os.path.join(UPLOAD_FOLDER, SCHEDULE_FILENAME)
 PROCESS_DIRECTORY = 'process'
 
 INTER_PROCESS_DIRECTORY = os.path.join(PROCESS_DIRECTORY, 'process_pipefiles')
+
 WORKING_FILES_DIRECTORY = os.path.join(PROCESS_DIRECTORY, 'working_files')
+WORKING_FILENAME = 'working_file'
+WORKING_FILE = os.path.join(WORKING_FILES_DIRECTORY, WORKING_FILENAME)
 
 PROCESSES = ['add', 'parse', 'schedule', 'stop']
