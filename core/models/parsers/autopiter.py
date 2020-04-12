@@ -13,12 +13,18 @@ class Autopiter(part_parser.PartParser):
 
     def find_one_part(self, part):
         html = self.get_part_html(part)
+        if html is None:
+            return part.not_found()
+
         ready_part, article_id = self.parse_html(html, part)
 
         if article_id == -1:
             return ready_part
 
         cost_html = self._get_cost_html(article_id)
+        if cost_html is None:
+            return part.not_found()
+
         cost = Autopiter._parse_cost(cost_html, article_id)
 
         if cost is None:

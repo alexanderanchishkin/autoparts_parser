@@ -23,16 +23,21 @@ def _run(process, xlsx_name=None, filename=None, start_date=None, end_date=None)
     create_working_file(filename)
     create_pipefile(process)
 
-    if process == 'add':
-        add.add(xlsx_name)
-    if process == 'parse':
-        parse.parse(xlsx_name, filename)
-    if process == 'report':
-        report.report(start_date, end_date)
-    if process == 'schedule':
-        schedule.schedule(xlsx_name, filename)
+    try:
+        if process == 'add':
+            add.add(xlsx_name)
+        if process == 'parse':
+            parse.parse(xlsx_name, filename)
+        if process == 'report':
+            report.report(start_date, end_date)
+        if process == 'schedule':
+            schedule.schedule(xlsx_name, filename)
+    except:
+        import traceback
+        traceback.print_exc()
+    finally:
+        remove_pipefile(process)
 
-    remove_pipefile(process)
     remove_working_file()
 
     print(f'finish process {process}')

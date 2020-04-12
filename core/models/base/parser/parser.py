@@ -1,4 +1,5 @@
 import abc
+import os
 
 import requests
 import stringcase
@@ -50,11 +51,18 @@ class Parser(abc.ABC):
         if self.xlsx_output:
             self.wb = part_xlsx.start_write_parts(settings.time_moment, self.__class__.__name__)
 
-        ready_parts = self.find_parts(iter_parts)
+        self.find_parts(iter_parts)
 
         if self.xlsx_output and self.wb is not None:
             part_xlsx.save_temp_parts(self.wb, self.get_output_filename())
-        return ready_parts
+
+        progress_file = os.path.join(settings.PROGRESS_FOLDER, self.__class__.__name__)
+        try:
+            if os.path.isfile(progress_file):
+                os.remove(progress_file)
+        except:
+            import traceback
+            traceback.print_exc()
 
     def _initialize(self):
         self.done = 0
@@ -96,8 +104,14 @@ class Parser(abc.ABC):
         return proxy
 
     def print_progress(self):
-        # TODO: pipefiles
-        print(f"{self.__class__.__name__}: {self.done}\\{self.total}\n", end='')
+        data= f"{self.__class__.__name__}: {self.done}\\{self.total}"
+
+        if self.done % 100 == 0:
+            with open(os.path.join(settings.PROGRESS_FOLDER, self.__class__.__name__), 'w') as f:
+                f.write(data)
+
+        if self.done % 100 == 0:
+            print(f"{data}\n", end='')
 
     def get_output_filename(self) -> str:
         if self.OUTPUT_FILE is not None:

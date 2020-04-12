@@ -20,7 +20,9 @@ def parse(xlsx_name, filename, sql_output=True, source='xlsx'):
     print(f'founded {count} parts.')
 
     parsers = load_parsers()
+
     run_parsers(parsers, sql_output, source, xlsx=xlsx_name)
+
     output_filename = finalize_parts(filename, parsers)
 
     return output_filename
@@ -37,6 +39,7 @@ def _get_parts_iter(source, **kwargs):
 def _init():
     time_.init_time()
     warning.init_warnings()
+
 
 
 def load_parsers():

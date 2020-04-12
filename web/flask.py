@@ -19,7 +19,7 @@ def index():
     is_terminating = 'stop' in process_.get_current_processes()
     working_file = process_.get_working_file()
 
-    current_progress_bar = progress_.calculate_progress()
+    progress_bar = progress_.calculate_progress()
     progresses = progress_.get_progresses()
 
     link = settings.RESULTS_FOLDER_NAME
@@ -27,10 +27,9 @@ def index():
     default_start_date = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
     default_end_date = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    is_schedule, schedule_progress_bar = schedule_.check_process()
+    is_schedule = schedule_.check_process()
     if is_schedule:
         working_file = 'Идёт парсинг по расписанию'
-    progress_bar = current_progress_bar if not is_schedule else schedule_progress_bar
 
     return flask.render_template('index.html', link=link, reports=reports,
                                  default_start_date=default_start_date, default_end_date=default_end_date,
