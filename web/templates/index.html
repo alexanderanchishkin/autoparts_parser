@@ -52,7 +52,7 @@
                 </div>
             {% else %}
                 <label>{{ working_file }}</label>
-                {% if progress_bar < 100 %}
+                {% if progress_bar is not none and progress_bar < 100 %}
                     <div class="buttons">
                         <input type="submit"
                                name="stop_button"
@@ -69,18 +69,20 @@
         <h2>Результаты</h2>
         <ul>
             {% if is_running %}
-                {% if progress_bar == 0 %}
-                    Чтение файла...
-                {% elif progress_bar < 100 %}
-                    Выполняется работа...{{ progress_bar }}%
-                    {% for progress in progresses %}
-                        <br>{{ progress }}
-                    {% endfor %}
-                {% else %}
-                    Сохранение файла...
-                {% endif %}
-                {% if is_terminating %}
-                    (Остановка)
+                {% if progress_bar is not none %}
+                    {% if progress_bar == 0 %}
+                        Чтение файла...
+                    {% elif progress_bar < 100 %}
+                        Выполняется работа...{{ progress_bar }}%
+                        {% for progress in progresses %}
+                            <br>{{ progress }}
+                        {% endfor %}
+                    {% else %}
+                        Сохранение файла...
+                    {% endif %}
+                    {% if is_terminating %}
+                        (Остановка)
+                    {% endif %}
                 {% endif %}
             {% endif %}
             {% for report in reports %}
