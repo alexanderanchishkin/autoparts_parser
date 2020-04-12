@@ -28,9 +28,6 @@ def run(xlsx_name, filename, process='parse', start_date='', end_date=''):
                 pass
             return parse(xlsx_name, filename)
         return 'Nothing'
-    except Exception:
-        print('Произошла ошибка: ', traceback.print_exc())
-        return 'error'
     finally:
         print('finish process')
         settings.is_running = False

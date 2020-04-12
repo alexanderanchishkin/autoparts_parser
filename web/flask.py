@@ -1,20 +1,17 @@
 import datetime
 import os
-import shutil
-import stat
 
 import flask
 
 from config import settings
 from core.utilities import value
-
 from process import process
+from web.utilities import buttons
 from web.utilities import progress as progress_
 from web.utilities import reports as reports_
+from web.utilities import schedule as schedule_
 
 app = flask.Flask(__name__)
-
-p = None
 
 
 @app.route('/', methods=['GET'])
@@ -23,7 +20,7 @@ def index():
     is_terminating = settings.is_terminating
     working_file = settings.working_file
 
-    progress_bar = progress_.calculate_progress()
+    current_progress_bar = progress_.calculate_progress()
     progresses = progress_.get_progresses()
 
     link = settings.RESULTS_FOLDER_NAME
@@ -31,11 +28,10 @@ def index():
     default_start_date = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
     default_end_date = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    if process.get_current_process() == 'schedule':
-        is_running = True
+    is_schedule, schedule_progress_bar = schedule_.check_process()
+    if is_schedule:
         working_file = 'Идёт парсинг по расписанию'
-        progress_bar_string = process.read_pipefile('schedule')
-        progress_bar = float(progress_bar_string) if value.float_try_parse(progress_bar_string) else None
+    progress_bar = current_progress_bar if not is_schedule else schedule_progress_bar
 
     return flask.render_template('index.html', link=link, reports=reports,
                                  default_start_date=default_start_date, default_end_date=default_end_date,
@@ -45,74 +41,7 @@ def index():
 
 @app.route('/', methods=['POST'])
 def make():
-    global p
-
-    if flask.request.form.get('stop_button'):
-        settings.is_terminating = True
-        return flask.redirect('/')
-
-    folder = settings.UPLOAD_FOLDER
-
-    if flask.request.form.get('schedule_button'):
-        f = flask.request.files['schedule_file']
-
-        if not f:
-            return flask.redirect('/')
-
-        filename = 'input.xlsx'
-        filepath = os.path.join(folder, filename)
-        if os.path.isfile(filepath):
-            os.remove(filepath)
-        f.save(filepath)
-        return flask.redirect('/')
-
-    if flask.request.form.get('report_button'):
-        start_date = flask.request.form.get('start_date')
-        end_date = flask.request.form.get('end_date')
-        if start_date and end_date:
-            process.run(None, None, 'report', start_date, end_date)
-        return flask.redirect('/')
-
-    if not os.path.exists(folder):
-        os.makedirs(folder)
-
-    out_folder = os.path.join(flask.current_app.root_path, 'files/results')
-    temp_folder = os.path.join(out_folder, 'tmp')
-
-    if not os.path.exists(out_folder):
-        os.makedirs(out_folder)
-
-    def remove_readonly(func, path):
-        os.chmod(path, stat.S_IWRITE)
-        func(path)
-
-    if os.path.exists(temp_folder):
-        shutil.rmtree(temp_folder, onerror=remove_readonly)
-        os.makedirs(temp_folder)
-
-    if not os.path.exists(temp_folder):
-        os.makedirs(temp_folder)
-
-    f = flask.request.files['file']
-
-    if not f:
-        return flask.redirect('/')
-
-    filename = f.filename
-    f.save(os.path.join(folder, filename))
-
-    if p and p.is_alive():
-        return flask.redirect('/')
-
-    xlsx_name = os.path.join(settings.UPLOAD_FOLDER, filename)
-
-    if flask.request.form.get('add_checkbox'):
-        DummyProcess(target=process.run, args=(xlsx_name, filename, 'add')).start()
-
-    if flask.request.form.get('parse_checkbox'):
-        p = DummyProcess(target=process.run, args=(xlsx_name, filename))
-        p.start()
-
+    buttons.check_buttons()
     return flask.redirect('/')
 
 

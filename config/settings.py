@@ -18,6 +18,8 @@ UPLOAD_FOLDER = os.path.join(CONTENT_FOLDER, UPLOAD_FOLDER_NAME)
 TEMP_XLSX_NAME = 'tmp'
 TEMP_XLSX_DIRECTORY = os.path.join(RESULTS_FOLDER, TEMP_XLSX_NAME)
 
+SCHEDULE_FILENAME = 'input.xlsx'
+
 INTER_PROCESS_DIRECTORY = os.path.join('process', 'process_pipefiles')
 PROCESSES = ['add', 'parse', 'schedule']
 
