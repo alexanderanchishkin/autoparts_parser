@@ -14,7 +14,7 @@ def check_buttons():
         _stop_button()
 
     if flask.request.form.get('schedule_button'):
-        _schedule_button()
+        _schedule_rewrite_button()
 
     if flask.request.form.get('report_button'):
         _report_button()
@@ -27,24 +27,26 @@ def _stop_button():
     settings.is_terminating = True
 
 
-def _schedule_button():
-    f = flask.request.files['schedule_file']
+def _schedule_rewrite_button():
+    schedule_file = flask.request.files['schedule_file']
 
-    if not f:
+    if not schedule_file:
         return
 
-    filename = settings.SCHEDULE_FILENAME
-    filepath = os.path.join(settings.UPLOAD_FOLDER, filename)
-    if os.path.isfile(filepath):
-        os.remove(filepath)
-    f.save(filepath)
+    schedule_filename = settings.SCHEDULE_FILENAME
+    schedule_filepath = os.path.join(settings.UPLOAD_FOLDER, schedule_filename)
+    if os.path.isfile(schedule_filepath):
+        os.remove(schedule_filepath)
+    schedule_file.save(schedule_filepath)
 
 
 def _report_button():
     start_date = flask.request.form.get('start_date')
     end_date = flask.request.form.get('end_date')
     if start_date and end_date:
-        process_.run(None, None, 'report', start_date, end_date)
+        multiprocessing.Process(target=process_.run,
+                                args=('report',),
+                                kwargs={'start_date': start_date, 'end_date': end_date}).start()
 
 
 def _parse_button():
@@ -64,10 +66,10 @@ def _parse_button():
     xlsx_name = os.path.join(settings.UPLOAD_FOLDER, filename)
 
     if flask.request.form.get('add_checkbox'):
-        multiprocessing.Process(target=process_.run, args=(xlsx_name, filename, 'add')).start()
+        multiprocessing.Process(target=process_.run, args=('add', xlsx_name, filename)).start()
 
     if flask.request.form.get('parse_checkbox'):
-        multiprocessing.Process(target=process_.run, args=(xlsx_name, filename)).start()
+        multiprocessing.Process(target=process_.run, args=('parse', xlsx_name, filename)).start()
 
 
 def _check_folders():

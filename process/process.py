@@ -7,10 +7,9 @@ from core import parse
 from core import report
 
 
-def run(xlsx_name, filename, process='parse', start_date='', end_date=''):
+def run(process, xlsx_name=None, filename=None, start_date=None, end_date=None):
     try:
         print(f'start process {process}')
-        settings.progress_list = []
         settings.working_file = filename
 
         while settings.is_running:
@@ -29,8 +28,6 @@ def run(xlsx_name, filename, process='parse', start_date='', end_date=''):
         return 'Nothing'
     finally:
         print('finish process')
-        settings.is_running = False
-        settings.is_terminating = False
         if os.path.isfile('pipefile2'):
             os.remove('pipefile2')
 
