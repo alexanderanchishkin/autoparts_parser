@@ -1,5 +1,6 @@
 import datetime
 import os
+import time
 
 import flask
 
@@ -15,7 +16,8 @@ app = flask.Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def index():
-    is_running = bool(process_.get_current_processes())
+    processes = process_.get_current_processes()
+    is_running = bool(processes)
     is_terminating = 'stop' in process_.get_current_processes()
     working_file = process_.get_working_file()
 
@@ -27,9 +29,12 @@ def index():
     default_start_date = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
     default_end_date = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    is_schedule = schedule_.check_process()
+    is_schedule = 'schedule' in processes
     if is_schedule:
         working_file = 'Идёт парсинг по расписанию'
+
+    if 'report' in processes:
+        working_file = 'Формируется отчёт'
 
     return flask.render_template('index.html', link=link, reports=reports,
                                  default_start_date=default_start_date, default_end_date=default_end_date,
@@ -40,6 +45,7 @@ def index():
 @app.route('/', methods=['POST'])
 def make():
     buttons.check_buttons()
+    time.sleep(3)
     return flask.redirect('/')
 
 

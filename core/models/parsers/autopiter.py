@@ -12,26 +12,24 @@ class Autopiter(part_parser.PartParser):
     DELAY = 15
 
     def find_one_part(self, part):
-        html = self.get_part_html(part)
-        if html is None:
-            return part.not_found()
+        with self.get_part_html(part) as html:
+            if html is None:
+                return part.not_found()
 
-        ready_part, article_id = self.parse_html(html, part)
+            with self.parse_html(html, part) as (ready_part, article_id):
+                if article_id == -1:
+                    return ready_part
 
-        if article_id == -1:
-            return ready_part
+                with self._get_cost_html(article_id) as cost_html:
+                    if cost_html is None:
+                        return part.not_found()
 
-        cost_html = self._get_cost_html(article_id)
-        if cost_html is None:
-            return part.not_found()
+                    with Autopiter._parse_cost(cost_html, article_id) as cost:
+                        if cost is None:
+                            return ready_part.not_found()
 
-        cost = Autopiter._parse_cost(cost_html, article_id)
-
-        if cost is None:
-            return ready_part.not_found()
-
-        ready_part.price = cost
-        return ready_part
+                        ready_part.price = cost
+                        return ready_part
 
     def get_part_html(self, part):
         url = f'https://32.autopiter.ru/api/searchdetails?detailNumber={part.number}'

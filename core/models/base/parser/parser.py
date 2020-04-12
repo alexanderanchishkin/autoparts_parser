@@ -74,7 +74,7 @@ class Parser(abc.ABC):
         if self.xlsx_output:
             part_xlsx.write_parts_to_xlsx(self.wb.active, ready_parts)
 
-    def request(self, url, headers=None, proxies=None, retry=True, method='GET', verify=False, timeout=15, attempts=5):
+    def request(self, url, headers=None, proxies=None, retry=True, method='GET', verify=False, timeout=5, attempts=1):
         if headers is None:
             headers = self.__class__.get_headers()
 
