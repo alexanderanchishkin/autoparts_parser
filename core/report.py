@@ -9,20 +9,21 @@ from core.io.xlsx import report as report_
 
 def report(start_date, end_date):
     settings.time_moment_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    iter_parts = part_db.get_iter_parts()
+    parts = part_db.get_all_parts()
 
     out_name = f"Отчёт_{start_date.replace('-', '')}_{end_date.replace('-', '')}"
 
     wb = report_.start_report()
 
     # TODO: !!!!!!
-    # articles = {part.get_id(): (part.article, part.brand) for part in iter_parts}
-    # parts = database.get_tuples_tables(start_date, end_date)
-    # statistics = filter_parts_by_id(parts, full_statistics)
-    # [one_statistics.update({'article': articles[part_id][0], 'brand': articles[part_id][1]})
-    #  for part_id, one_statistics in statistics.items()]
-    #
-    # report_.write_report_parts(wb.active, parts)
+    articles = {part.get_id(): (part.article, part.brand) for part in parts}
+    parts = database.get_tuples_tables(start_date, end_date)
+    statistics = filter_parts_by_id(parts, full_statistics)
+
+    [one_statistics.update({'article': articles[part_id][0], 'brand': articles[part_id][1]})
+     for part_id, one_statistics in statistics.items() if part_id in articles]
+
+    report_.write_report_parts(wb.active, statistics.values())
 
     report_.save_report(wb, out_name)
 

@@ -17,7 +17,8 @@ def start(process, xlsx_name=None, filename=None, start_date=None, end_date=None
 def _run(process, xlsx_name=None, filename=None, start_date=None, end_date=None):
     print(f'start process {process}')
 
-    if get_current_processes():
+    while get_current_processes():
+        print(f'{process}: Wait {", ".join(get_current_processes())}')
         time.sleep(10)
 
     create_working_file(filename)
@@ -49,14 +50,15 @@ def get_current_processes():
 
     pipefiles = [os.path.join(pipefiles_directory, process) for process in processes]
     exists_pipefiles = [pipefile for pipefile in pipefiles if os.path.isfile(pipefile)]
+    exists_processes = [str(pipefile).split('\\')[-1] for pipefile in exists_pipefiles]
 
-    if not exists_pipefiles:
+    if not exists_processes:
         return []
 
-    if len(exists_pipefiles) > 1:
-        print('Несколько процессов одновременно: ', ', '.join(exists_pipefiles))
+    if len(exists_processes) > 1:
+        print('Несколько процессов одновременно: ', ', '.join(exists_processes))
 
-    return exists_pipefiles
+    return exists_processes
 
 
 def read_pipefile(filename):

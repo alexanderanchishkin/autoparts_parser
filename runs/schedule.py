@@ -23,7 +23,7 @@ def _init():
 
 def _check_time():
     now = datetime.datetime.now()
-    return (now.hour == 10 or now.hour == 18) and now.minute < 43
+    return (now.hour == 10 or now.hour == 18) and now.minute < 2
 
 
 def _start_parse_schedule():

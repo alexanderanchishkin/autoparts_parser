@@ -13,7 +13,8 @@ def save_report(wb, out_name):
 
 
 def write_report_parts(ws, parts: list):
-    rows = (_get_report_row_from_part(part) for part in parts)
+    print(parts)
+    rows = (_get_report_row_from_part(part) for part in parts if 'article' in part)
     xlsx.add_rows_xlsx(ws, rows)
 
 
