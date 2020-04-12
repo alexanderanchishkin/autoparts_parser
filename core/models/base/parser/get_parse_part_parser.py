@@ -8,7 +8,7 @@ class GetParsePartParser(part_parser.PartParser, abc.ABC):
         with self.get_part_html(part) as html:
             if html is None:
                 return part.not_found()
-            with self.parse_html(html, part) as ready_path:
+            with self.parse_html(html, part) as ready_part:
                 return ready_part
 
     @staticmethod
