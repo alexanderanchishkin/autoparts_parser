@@ -1,5 +1,4 @@
 import os
-import multiprocessing
 import shutil
 import stat
 
@@ -7,6 +6,7 @@ import flask
 
 from config import settings
 from process import process as process_
+from web.utilities import checkboxes
 
 
 def check_buttons():
@@ -46,32 +46,23 @@ def _report_button():
     start_date = flask.request.form.get('start_date')
     end_date = flask.request.form.get('end_date')
     if start_date and end_date:
-        multiprocessing.Process(target=process_.run,
-                                args=('report',),
-                                kwargs={'start_date': start_date, 'end_date': end_date}).start()
+        process_.start('report', start_date=start_date, end_date=end_date)
 
 
 def _parse_button():
-    _check_folders()
-
-    f = flask.request.files['file']
-
-    if not f:
-        return
-
-    filename = f.filename
-    f.save(os.path.join(settings.RESULTS_FOLDER, filename))
-
     if process_.get_current_process() is not None:
         return
 
-    xlsx_name = os.path.join(settings.UPLOAD_FOLDER, filename)
+    parse_file = flask.request.files['file']
 
-    if flask.request.form.get('add_checkbox'):
-        multiprocessing.Process(target=process_.run, args=('add', xlsx_name, filename)).start()
+    if not parse_file:
+        return
 
-    if flask.request.form.get('parse_checkbox'):
-        multiprocessing.Process(target=process_.run, args=('parse', xlsx_name, filename)).start()
+    _check_folders()
+
+    parse_file.save(os.path.join(settings.RESULTS_FOLDER, parse_file.filename))
+    xlsx_name = os.path.join(settings.UPLOAD_FOLDER, parse_file.filename)
+    checkboxes.check_checkboxes(xlsx_name, parse_file.filename)
 
 
 def _check_folders():

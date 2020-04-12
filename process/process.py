@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 import time
 
@@ -7,7 +8,11 @@ from core import parse
 from core import report
 
 
-def run(process, xlsx_name=None, filename=None, start_date=None, end_date=None):
+def start(process, xlsx_name=None, filename=None, start_date=None, end_date=None):
+    multiprocessing.Process(target=_run, args=(process, xlsx_name, filename, start_date, end_date))
+
+
+def _run(process, xlsx_name=None, filename=None, start_date=None, end_date=None):
     try:
         print(f'start process {process}')
         settings.working_file = filename
