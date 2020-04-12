@@ -18,7 +18,7 @@ class Parser(abc.ABC):
 
     DELAY = 0
 
-    THREADS_COUNT = 50
+    THREADS_COUNT = settings.DEFAULT_PARSER_THREADS_COUNT
 
     def __init__(self, xlsx_input=True, xlsx_output=True, sql_input=False, sql_output=True):
         self.xlsx_input = xlsx_input

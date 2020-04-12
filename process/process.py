@@ -20,7 +20,7 @@ def _run(process, xlsx_name=None, filename=None, start_date=None, end_date=None)
     if get_current_processes():
         time.sleep(10)
 
-    create_working_file(xlsx_name)
+    create_working_file(filename)
     create_pipefile(process)
 
     if process == 'add':
@@ -84,7 +84,7 @@ def get_working_file():
     if not os.path.isfile(settings.WORKING_FILE):
         return None
 
-    with open(settings.WORKING_FILE, 'r') as f:
+    with open(settings.WORKING_FILE, 'r', encoding='utf-8') as f:
         return f.read()
 
 
@@ -95,7 +95,7 @@ def create_working_file(xlsx_name):
     if not os.path.isdir(settings.WORKING_FILES_DIRECTORY):
         os.mkdir(settings.WORKING_FILES_DIRECTORY)
 
-    with open(settings.WORKING_FILE, 'w') as f:
+    with open(settings.WORKING_FILE, 'w', encoding='utf-8') as f:
         f.write(xlsx_name)
 
 
