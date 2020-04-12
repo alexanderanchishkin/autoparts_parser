@@ -1,11 +1,10 @@
 import os
 import time
-import traceback
 
 from config import settings
-from core.add import add
-from core.parse import parse
-from core.report import report
+from core import add
+from core import parse
+from core import report
 
 
 def run(xlsx_name, filename, process='parse', start_date='', end_date=''):
@@ -20,13 +19,13 @@ def run(xlsx_name, filename, process='parse', start_date='', end_date=''):
         settings.is_running = True
 
         if process == 'add':
-            return add(xlsx_name)
+            return add.add(xlsx_name)
         if process == 'report':
-            return report(start_date, end_date)
+            return report.report(start_date, end_date)
         if process == 'parse':
             with open('pipefile2', 'w') as f:
                 pass
-            return parse(xlsx_name, filename)
+            return parse.parse(xlsx_name, filename)
         return 'Nothing'
     finally:
         print('finish process')
