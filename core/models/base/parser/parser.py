@@ -106,11 +106,11 @@ class Parser(abc.ABC):
     def print_progress(self):
         data= f"{self.__class__.__name__}: {self.done}\\{self.total}"
 
-        if self.done % 100 == 0 or self.done == 1 or self.done == self.total:
+        if True or self.done % 100 == 0 or self.done == 1 or self.done == self.total:
             with open(os.path.join(settings.PROGRESS_FOLDER, self.__class__.__name__), 'w') as f:
                 f.write(data)
 
-        if self.done % 100 == 0 or self.done == 1 or self.done == self.total:
+        if True or self.done % 100 == 0 or self.done == 1 or self.done == self.total:
             print(f"{data}\n", end='')
 
     def get_output_filename(self) -> str:
