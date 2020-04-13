@@ -22,8 +22,12 @@ class PartParser(parser_.Parser, abc.ABC):
 
     def try_find_one_part(self, part):
         start_time = time.time()
-        ready_part = self.find_one_part(part)
-        self.handle_part(start_time)
+        try:
+            ready_part = self.find_one_part(part)
+        except:
+            return part.not_found()
+        finally:
+            self.handle_part(start_time)
         return ready_part
 
     def handle_part(self, start_time):

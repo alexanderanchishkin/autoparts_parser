@@ -28,6 +28,9 @@ class Froza(parser.GetParsePartParser):
         except json.decoder.JSONDecodeError:
             return None
 
+        if 'data' not in json_response:
+            return part.not_found()
+
         block = json_response['data']
         if not block:
             return part.not_found()
@@ -39,6 +42,9 @@ class Froza(parser.GetParsePartParser):
 
     @staticmethod
     def _parse_part_from_block_model(block_model, part):
+        if not block_model.values():
+            return part.not_found()
+
         stores = list(block_model.values())[0]
         if len(stores) == 0:
             return part.not_found()
