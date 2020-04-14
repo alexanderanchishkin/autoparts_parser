@@ -22,6 +22,7 @@ class PartParser(parser_.Parser, abc.ABC):
             try:
                 self.save_result(ready_parts)
             except:
+                print(f'{self.__class__.__name__}: not saved db')
                 pass
 
     def try_find_one_part(self, part):
