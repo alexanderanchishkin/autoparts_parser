@@ -21,7 +21,11 @@ def parse(xlsx_name, filename, sql_output=True, source='xlsx'):
 
     parsers = load_parsers()
 
-    run_parsers(parsers, sql_output, source, xlsx=xlsx_name)
+    try:
+        run_parsers(parsers, sql_output, source, xlsx=xlsx_name)
+    except:
+        import traceback
+        traceback.print_exc()
 
     output_filename = finalize_parts(filename, parsers)
 

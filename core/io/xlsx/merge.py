@@ -11,7 +11,10 @@ def merge_files(files, out_name):
     temp_folder = settings.TEMP_XLSX_DIRECTORY
     for file in files:
         filename = os.path.join(temp_folder, file)
-        file_wb = openpyxl.load_workbook(filename, read_only=True)
+        try:
+            file_wb = openpyxl.load_workbook(filename, read_only=True)
+        except:
+            continue
         file_ws = file_wb.active
         wb.create_sheet(file_ws.title)
 

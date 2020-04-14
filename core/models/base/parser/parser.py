@@ -74,7 +74,7 @@ class Parser(abc.ABC):
         if self.xlsx_output:
             part_xlsx.write_parts_to_xlsx(self.wb.active, ready_parts)
 
-    def request(self, url, headers=None, proxies=None, retry=True, method='GET', verify=False, timeout=5, attempts=1):
+    def request(self, url, headers=None, proxies=None, retry=True, method='GET', verify=False, timeout=15, attempts=3):
         if headers is None:
             headers = self.__class__.get_headers()
 
@@ -89,8 +89,14 @@ class Parser(abc.ABC):
                 if not retry or r.status_code == 200:
                     return r
             except requests.exceptions.ConnectionError:
+                print('Connection error')
+                import traceback
+                traceback.print_exc()
                 pass
             except requests.exceptions.ReadTimeout:
+                print('Timeout')
+                import traceback
+                traceback.print_exc()
                 pass
 
             attempts_count += 1

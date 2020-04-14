@@ -31,6 +31,7 @@ class AvdMotors(parser.GetParsePartParser):
             return AvdMotors._handle_error(part, response1)
 
         if 'data' not in json_response:
+            print('not data')
             return part.not_found()
 
         prices = json_response['data']
@@ -38,6 +39,7 @@ class AvdMotors(parser.GetParsePartParser):
             prices = list(prices.values())
 
         if not prices:
+            print('not prices')
             return part.not_found()
 
         min_price = prices[0].get('price', None)
@@ -51,6 +53,7 @@ class AvdMotors(parser.GetParsePartParser):
             min_title2 = min_title
 
         if min_price is None or min_price2 is None:
+            print('not min_price')
             return part.not_found()
 
         try:
@@ -59,36 +62,34 @@ class AvdMotors(parser.GetParsePartParser):
         except json.decoder.JSONDecodeError:
             return AvdMotors._handle_error(part)
 
-        if not clones:
-            return part.not_found()
+        if clones:
+            articles = clones[0]
+            if isinstance(articles, dict):
+                articles = list(articles.values())
+            for prices in articles:
+                if isinstance(prices, dict):
+                    prices = list(prices.values())
+                current_min_price = prices[0]['price']
+                current_min_title = prices[0].get('item_name', part.number)
+                current_min_price2 = prices[1]['price']
+                current_min_title2 = prices[1].get('item_name', part.number)
 
-        articles = clones[0]
-        if isinstance(articles, dict):
-            articles = list(articles.values())
-        for prices in articles:
-            if isinstance(prices, dict):
-                prices = list(prices.values())
-            current_min_price = prices[0]['price']
-            current_min_title = prices[0].get('item_name', part.number)
-            current_min_price2 = prices[1]['price']
-            current_min_title2 = prices[1].get('item_name', part.number)
+                if current_min_price > min_price2:
+                    continue
+                if current_min_price < min_price:
+                    min_price2 = min_price
+                    min_title2 = min_title
+                    min_price = current_min_price
+                    min_title = current_min_title
 
-            if current_min_price > min_price2:
-                continue
-            if current_min_price < min_price:
-                min_price2 = min_price
-                min_title2 = min_title
-                min_price = current_min_price
-                min_title = current_min_title
-
-                if current_min_price2 < min_price2:
-                    min_price2 = current_min_price2
-                    min_title2 = current_min_title2
-                continue
-            if min_price < current_min_price < min_price2:
-                min_price2 = current_min_price
-                min_title2 = current_min_title
-                continue
+                    if current_min_price2 < min_price2:
+                        min_price2 = current_min_price2
+                        min_title2 = current_min_title2
+                    continue
+                if min_price < current_min_price < min_price2:
+                    min_price2 = current_min_price
+                    min_title2 = current_min_title
+                    continue
 
         if min_price2 > int(1e+6) - 1:
             min_price2 = min_price

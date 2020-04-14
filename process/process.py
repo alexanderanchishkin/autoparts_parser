@@ -21,6 +21,9 @@ def _run(process, xlsx_name=None, filename=None, start_date=None, end_date=None)
         print(f'{process}: Wait {", ".join(get_current_processes())}')
         time.sleep(3)
 
+    if process == 'parse':
+        time.sleep(1)
+
     create_working_file(filename)
     create_pipefile(process)
 

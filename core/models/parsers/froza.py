@@ -8,6 +8,7 @@ class Froza(parser.GetParsePartParser):
     OUTPUT_FILE = 'froza.xlsx'
 
     MULTI_REQUEST = True
+    BUFFER_SIZE = 50
     THREADS_COUNT = 50
 
     DELAY = 15

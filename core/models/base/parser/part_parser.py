@@ -18,21 +18,30 @@ class PartParser(parser_.Parser, abc.ABC):
 
             p = thread.Pool(len(parts_chunk))
             ready_parts = p.map(self.try_find_one_part, parts_chunk)
-            self.save_result(ready_parts)
+
+            try:
+                self.save_result(ready_parts)
+            except:
+                pass
 
     def try_find_one_part(self, part):
         start_time = time.time()
         try:
             ready_part = self.find_one_part(part)
+            return ready_part
         except:
+            import traceback
+            traceback.print_exc()
             return part.not_found()
         finally:
             self.handle_part(start_time)
-        return ready_part
+            try:
+                self.print_progress()
+            except:
+                pass
 
     def handle_part(self, start_time):
         self.done += 1
-        self.print_progress()
 
         if self.done == self.total:
             return
