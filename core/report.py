@@ -4,11 +4,13 @@ from config import settings
 
 from core.io.database.utilities import database
 from core.io.database.utilities import part as part_db
+from core.io.database.utilities import report as report_db
 from core.io.xlsx import report as report_
+from core.utilities import time as time_
 
 
 def report(start_date, end_date):
-    settings.time_moment_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    time_.init_time()
     parts = part_db.get_all_parts()
 
     out_name = f"Отчёт_{start_date.replace('-', '')}_{end_date.replace('-', '')}"
@@ -23,8 +25,14 @@ def report(start_date, end_date):
     [one_statistics.update({'article': articles[part_id][0], 'brand': articles[part_id][1]})
      for part_id, one_statistics in statistics.items() if part_id in articles]
 
-    report_.write_report_parts(wb.active, statistics.values())
+    try:
+        report_db.write_report(statistics.values())
+    except:
+        print('Не получилось...')
+        import traceback
+        traceback.print_exc()
 
+    report_.write_report_parts(wb.active, statistics.values())
     report_.save_report(wb, out_name)
 
 

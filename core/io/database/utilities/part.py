@@ -7,8 +7,10 @@ from core.utilities import value
 def get_iter_parts():
     return get_all_parts().iterator()
 
+
 def get_all_parts():
     return models.Article.select()
+
 
 def add_parts(iter_parts):
     while True:

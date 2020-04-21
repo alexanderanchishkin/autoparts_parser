@@ -12,6 +12,13 @@ def create_table(table_prefix, parser):
     return table_name
 
 
+def create_report_table(table_prefix):
+    table_name = "report__" + table_prefix
+    query = f"CREATE TABLE {table_name} LIKE generic_report"
+    database.db.execute_sql(query)
+    return table_name
+
+
 def get_tables(between_dates=(), from_shop=None, from_tables=None):
     tables = database.db.get_tables() if from_tables is None else from_tables
     return [table for table in tables
