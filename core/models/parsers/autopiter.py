@@ -10,8 +10,8 @@ class Autopiter(part_parser.PartParser):
     OUTPUT_FILE = 'autopiter.xlsx'
 
     DELAY = 15
-    BUFFER_SIZE = 50
-    THREADS_COUNT = 50
+    BUFFER_SIZE = 100
+    THREADS_COUNT = 100
 
     def find_one_part(self, part):
         html = self.get_part_html(part)

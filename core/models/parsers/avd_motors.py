@@ -8,7 +8,8 @@ from core.models.base.parser import get_parse_part_parser as parser
 class AvdMotors(parser.GetParsePartParser):
     OUTPUT_FILE = 'avd_motors.xlsx'
 
-    THREADS_COUNT = 50
+    BUFFER_SIZE = 100
+    THREADS_COUNT = 100
 
     def get_part_html(self, part):
         url = f'https://www.avdmotors.ru/price/?number=' \

@@ -7,9 +7,8 @@ from core.models.base.parser import get_parse_part_parser as parser
 class Froza(parser.GetParsePartParser):
     OUTPUT_FILE = 'froza.xlsx'
 
-    MULTI_REQUEST = True
-    BUFFER_SIZE = 50
-    THREADS_COUNT = 50
+    BUFFER_SIZE = 100
+    THREADS_COUNT = 100
 
     DELAY = 15
 
