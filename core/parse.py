@@ -48,12 +48,12 @@ def _init():
 
 def load_parsers():
     return [
-        armtek.Armtek()
-        # autopiter.Autopiter(),
-        # avd_motors.AvdMotors(),
-        # froza.Froza(),
-        # mparts.Mparts(),
-        # parterra.Parterra()
+        # armtek.Armtek(),
+        autopiter.Autopiter(),
+        avd_motors.AvdMotors(),
+        froza.Froza(),
+        mparts.Mparts(),
+        parterra.Parterra()
     ]
 
 
