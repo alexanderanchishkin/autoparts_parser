@@ -4,6 +4,7 @@ from config import settings
 from core.io.xlsx import part as part_xlsx
 from core.io.xlsx import merge as merge_xlsx
 from core.io.database.utilities import table as table_db
+from core.models.parsers import armtek
 from core.models.parsers import autopiter
 from core.models.parsers import avd_motors
 from core.models.parsers import froza
@@ -45,14 +46,14 @@ def _init():
     warning.init_warnings()
 
 
-
 def load_parsers():
     return [
-        autopiter.Autopiter(),
-        avd_motors.AvdMotors(),
-        froza.Froza(),
-        mparts.Mparts(),
-        parterra.Parterra()
+        armtek.Armtek()
+        # autopiter.Autopiter(),
+        # avd_motors.AvdMotors(),
+        # froza.Froza(),
+        # mparts.Mparts(),
+        # parterra.Parterra()
     ]
 
 

@@ -21,6 +21,9 @@ class Parser(abc.ABC):
 
     THREADS_COUNT = settings.DEFAULT_PARSER_THREADS_COUNT
 
+    USE_SESSION = False
+    USE_PROXY = True
+
     def __init__(self, xlsx_input=True, xlsx_output=True, sql_input=False, sql_output=True):
         self.xlsx_input = xlsx_input
         self.xlsx_output = xlsx_output
@@ -40,6 +43,8 @@ class Parser(abc.ABC):
         self.done = 0
         self.total = 0
 
+        self.session = requests.Session() if self.USE_SESSION else None
+
     @stopwatch.time('Parser')
     def execute(self, iter_parts, count):
         if not iter_parts:
@@ -47,6 +52,8 @@ class Parser(abc.ABC):
 
         self.total = count
         self._initialize()
+
+        self.login()
 
         if self.xlsx_output:
             self.wb = part_xlsx.start_write_parts(settings.time_moment, self.__class__.__name__)
@@ -64,6 +71,9 @@ class Parser(abc.ABC):
             import traceback
             traceback.print_exc()
 
+    def login(self):
+        pass
+
     def _initialize(self):
         self.done = 0
         self.proxies = proxy_.load()
@@ -74,20 +84,42 @@ class Parser(abc.ABC):
         if self.xlsx_output:
             part_xlsx.write_parts_to_xlsx(self.wb.active, ready_parts)
 
-    def request(self, url, headers=None, proxies=None, retry=True, method='GET', verify=False, timeout=15, attempts=3):
+    def request(self, url, headers=None, proxies=None, retry=True,
+                method='GET', verify=False, timeout=15, attempts=3, use_proxy=None, data=None, json_data=None):
         if headers is None:
-            headers = self.__class__.get_headers()
+            headers = self.get_headers()
+
+        use_proxy = use_proxy if use_proxy is not None else self.USE_PROXY
+        client = self.session if self.session is not None else requests
 
         attempts_count = 0
         while True:
-            if proxies is None:
-                proxies = self.get_next_proxies()
+            params = {
+                'headers': headers,
+                'verify': verify,
+                'timeout': timeout
+            }
+
+            if use_proxy:
+                if proxies is None:
+                    proxies = self.get_next_proxies()
+                params['proxies'] = proxies
+
+            if data is not None:
+                params['data'] = data
+            if json_data is not None:
+                params['json_data'] = json_data
 
             try:
-                r = requests.request(method, url, headers=headers, proxies=proxies, verify=verify, timeout=timeout)
+                r = client.request(method, url, **params)
 
                 if not retry or r.status_code == 200:
                     return r
+            except requests.exceptions.ConnectTimeout:
+                print('Connection timeout')
+                import traceback
+                traceback.print_exc()
+                pass
             except requests.exceptions.ConnectionError:
                 print('Connection error')
                 import traceback

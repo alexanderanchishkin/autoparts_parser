@@ -16,7 +16,7 @@ class PartParser(parser_.Parser, abc.ABC):
             if not parts_chunk:
                 break
 
-            p = thread.Pool(len(parts_chunk))
+            p = thread.Pool(self.THREADS_COUNT)
             ready_parts = p.map(self.try_find_one_part, parts_chunk)
 
             try:
