@@ -26,7 +26,8 @@ def report(start_date, end_date):
      for part_id, one_statistics in statistics.items() if part_id in articles]
 
     try:
-        report_db.write_report(statistics.values())
+        # report_db.write_report(statistics.values())
+        pass
     except:
         print('Не получилось...')
         import traceback
