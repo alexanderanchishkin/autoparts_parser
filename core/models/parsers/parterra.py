@@ -36,7 +36,7 @@ class Parterra(parser.GetParsePartParser):
         prices = Parterra._get_prices(soup)
         main_price = Parterra._get_main_price(soup)
 
-        if prices is None or main_price is None:
+        if main_price is None:
             return part.not_found()
 
         prices.append(main_price)
@@ -105,10 +105,10 @@ class Parterra(parser.GetParsePartParser):
     def _get_prices(soup):
         prices_block = Parterra._get_prices_block(soup)
         if prices_block is None:
-            return None
+            return []
         prices_html = Parterra._get_prices_html(prices_block)
         if prices_html is None:
-            return None
+            return []
         prices = Parterra._get_prices_from_html(prices_html)
         return prices
 
@@ -118,7 +118,7 @@ class Parterra(parser.GetParsePartParser):
         if prices_block is None:
             return None
 
-        if 'Аналоги' in prices_block:
+        if prices_block.find('h3') is not None and 'Аналоги' in prices_block.find('h3').text:
             return None
         return prices_block
 
@@ -147,7 +147,7 @@ class Parterra(parser.GetParsePartParser):
             return None
         if not price.contents:
             return None
-        return float(price.contents[0].replace(' ', ''))
+        return float(price.contents[0].replace(' ', '').split('<')[0])
 
     @staticmethod
     def _prepare_string(string):
