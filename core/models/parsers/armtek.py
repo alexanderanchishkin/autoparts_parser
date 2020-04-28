@@ -2,6 +2,7 @@ import json
 import random
 import traceback
 
+from config import settings
 from core.models import part as part_
 from core.models.base.parser import part_parser as parser
 
@@ -10,7 +11,7 @@ class Armtek(parser.PartParser):
     OUTPUT_FILE = 'armtek.xlsx'
 
     DELAY = 1
-    BUFFER_SIZE = 100
+    BUFFER_SIZE = settings.DEFAULT_PARSER_BUFFER_SIZE
     THREADS_COUNT = 1
 
     USE_SESSION = True

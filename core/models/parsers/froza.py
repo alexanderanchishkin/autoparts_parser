@@ -1,5 +1,6 @@
 import json
 
+from config import settings
 from core.models import part as part_
 from core.models.base.parser import get_parse_part_parser as parser
 
@@ -7,8 +8,8 @@ from core.models.base.parser import get_parse_part_parser as parser
 class Froza(parser.GetParsePartParser):
     OUTPUT_FILE = 'froza.xlsx'
 
-    BUFFER_SIZE = 100
-    THREADS_COUNT = 100
+    BUFFER_SIZE = int(1.3 * settings.DEFAULT_PARSER_BUFFER_SIZE)
+    THREADS_COUNT = int(1.3 * settings.DEFAULT_PARSER_THREADS_COUNT)
 
     DELAY = 15
 

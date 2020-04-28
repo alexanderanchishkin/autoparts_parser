@@ -2,6 +2,7 @@ import json
 import random
 import string
 
+from config import settings
 from core.models import part as part_
 from core.models.base.parser import part_parser
 
@@ -10,8 +11,8 @@ class Autopiter(part_parser.PartParser):
     OUTPUT_FILE = 'autopiter.xlsx'
 
     DELAY = 15
-    BUFFER_SIZE = 150
-    THREADS_COUNT = 150
+    BUFFER_SIZE = int(1.5 * settings.DEFAULT_PARSER_BUFFER_SIZE)
+    THREADS_COUNT = int(1.5 * settings.DEFAULT_PARSER_THREADS_COUNT)
 
     def find_one_part(self, part):
         html = self.get_part_html(part)
