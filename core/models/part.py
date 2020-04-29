@@ -4,7 +4,7 @@ class Part:
         self.number = number
         self.model = model
         self.title = title
-        self.price = price
+        self.price = int(price)
 
     def __str__(self):
         return f'{self.number}, {self.model}, {self.title}, {self.price}'
