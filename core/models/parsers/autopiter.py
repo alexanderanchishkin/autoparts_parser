@@ -77,11 +77,11 @@ class Autopiter(part_parser.PartParser):
             return 'Ntn'
         if 'mahle' in model or 'knecht' in model:
             return 'Knecht/Mahle'
-        if model.lower() == 'gm':
+        if 'gm' in model.lower() or 'general' in model.lower():
             return 'General Motors'
-        if model.lower() == 'hyundai' or model.lower() == 'hundai':
-            model = 'Hyundai-Kia'
-        if model.lower() == 'acdelco':
+        if 'hyundai' in model.lower() or 'hundai' in model.lower():
+            return 'Hyundai-Kia'
+        if 'delco' in model.lower():
             return 'Ac Delco'
         if '-' in model:
             return '-'.join(map(str.capitalize, model.split('-')))

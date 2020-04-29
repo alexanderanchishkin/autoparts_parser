@@ -2,11 +2,15 @@ import re
 
 import bs4
 
+from config import settings
 from core.models import part as part_
 from core.models.base.parser import get_parse_part_parser as parser
 
 
 class Mparts(parser.GetParsePartParser):
+    BUFFER_SIZE = int(0.8 * settings.DEFAULT_PARSER_BUFFER_SIZE)
+    THREADS_COUNT = int(0.8 * settings.DEFAULT_PARSER_THREADS_COUNT)
+
     def get_part_html(self, part):
         url = f'https://www.v01.ru/auto/search/{part.number}/?brand_title={self.prepare_model(part.model)}'
         r = self.request(url, method='POST')
