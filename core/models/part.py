@@ -4,7 +4,7 @@ class Part:
         self.number = number
         self.model = model
         self.title = title
-        self.price = int(price)
+        self.price = int(price) if price is not None else None
 
     def __str__(self):
         return f'{self.number}, {self.model}, {self.title}, {self.price}'
