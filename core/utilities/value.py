@@ -5,6 +5,8 @@ def float_try_parse(value):
     try:
         float(value)
         return True
+    except TypeError:
+        return False
     except ValueError:
         return False
 
