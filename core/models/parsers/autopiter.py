@@ -73,9 +73,11 @@ class Autopiter(part_parser.PartParser):
 
     @staticmethod
     def prepare_model(model):
-        if 'ntn' in model:
+        if 'mersede' in model.lower() or 'mercede' in model.lower():
+            return 'Mercedes'
+        if 'ntn' in model.lower():
             return 'Ntn'
-        if 'mahle' in model or 'knecht' in model:
+        if 'mahle' in model.lower() or 'knecht' in model.lower():
             return 'Knecht/Mahle'
         if 'gm' in model.lower() or 'general' in model.lower():
             return 'General Motors'

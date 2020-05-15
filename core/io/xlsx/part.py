@@ -48,7 +48,7 @@ def write_parts_to_xlsx(ws, parts: list):
 
 
 def _build_parts_iterator(ws, start_row: int) -> Iterator:
-    return (part_.Part(_prepare_part_number(row[0].value), row[1].value)
+    return (part_.Part(_prepare_part_number(str(row[0].value)), str(row[1].value))
          for row in ws.iter_rows(start_row, ws.max_row, 1, 3) if row[0].value and row[1].value)
 
 
