@@ -85,6 +85,9 @@
                         (Остановка)
                     {% endif %}
                 {% endif %}
+                <form method="post">
+                    <input type="submit" name="cancel_button">Отменить</input>
+                </form>
             {% endif %}
             {% for report in reports %}
                 <li><a href="{{ link }}/{{ report }}">{{ report }}</a></li>

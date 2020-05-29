@@ -34,6 +34,6 @@ WORKING_FILES_DIRECTORY = os.path.join(PROCESS_DIRECTORY, 'working_files')
 WORKING_FILENAME = 'working_file'
 WORKING_FILE = os.path.join(WORKING_FILES_DIRECTORY, WORKING_FILENAME)
 
-PROCESSES = ['add', 'parse', 'schedule', 'stop', 'report']
+PROCESSES = ['add', 'parse', 'schedule', 'stop', 'report', 'cancel']
 
 PROXY_FILE = os.path.join('config', 'proxies.txt')

@@ -68,6 +68,16 @@ def _parse_button():
     checkboxes.check_checkboxes(xlsx_name, parse_file.filename)
 
 
+def _cancel_button():
+    filepath = os.path.join(os.path.join('process', 'process_pipefiles'), 'parse')
+    if os.path.exists(filepath):
+        os.remove(filepath)
+
+    filepath = os.path.join(os.path.join('process', 'process_pipefiles'), 'schedule')
+    if os.path.exists(filepath):
+        os.remove(filepath)
+
+
 def _check_folders():
     if not os.path.exists(settings.UPLOAD_FOLDER):
         os.makedirs(settings.UPLOAD_FOLDER)
