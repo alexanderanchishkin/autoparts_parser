@@ -8,7 +8,7 @@ from core.models.base.parser import get_parse_part_parser as parser
 
 class Parterra(parser.GetParsePartParser):
     def get_part_html(self, part):
-        url = f'http://parterra.ru/utils/?action=search&term={part.number} {self.prepare_model(part.model)}'
+        url = f'http://parterra.ru/utils/?action=search&term={part.number}%20{self.prepare_model(part.model)}'
         r = self.request(url, method='POST')
         if r is None:
             return None

@@ -23,26 +23,30 @@ class PartParser(parser_.Parser, abc.ABC):
                 self.save_result(ready_parts)
             except:
                 print(f'{self.__class__.__name__}: not saved db')
-                pass
+                pass               
 
     def try_find_one_part(self, part):
         start_time = time.time()
-        try:
-            ready_part = self.find_one_part(part)
+        try:            
+            ready_part = self.find_one_part(part)            
             return ready_part
         except:
             import traceback
             traceback.print_exc()
             return part.not_found()
-        finally:
-            self.handle_part(start_time)
-            try:
-                self.print_progress()
-            except:
-                pass
+        finally:    
+            self.mutex.acquire()
+            self.handle_part(start_time)        
+            self.mutex.release()
+                      
 
     def handle_part(self, start_time):
         self.done += 1
+        
+        try:
+            self.print_progress()
+        except:
+            pass                          
 
         if self.done == self.total:
             return

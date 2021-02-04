@@ -13,6 +13,9 @@ class Autopiter(part_parser.PartParser):
     DELAY = 15
     BUFFER_SIZE = int(1.5 * settings.DEFAULT_PARSER_BUFFER_SIZE)
     THREADS_COUNT = int(1.5 * settings.DEFAULT_PARSER_THREADS_COUNT)
+    # THREADS_COUNT = 1
+    
+    USE_PROXY = True
 
     def find_one_part(self, part):
         html = self.get_part_html(part)
@@ -23,31 +26,31 @@ class Autopiter(part_parser.PartParser):
 
         if article_id == -1:
             return ready_part
-
-        cost_html = self._get_cost_html(article_id)
+        
+        cost_html = self._get_cost_html(article_id)        
         if cost_html is None:
             return part.not_found()
 
         cost = Autopiter._parse_cost(cost_html, article_id)
 
         if cost is None:
-            return ready_part.not_found()
+            return ready_part.not_found()               
 
         ready_part.price = cost
         return ready_part
 
     def get_part_html(self, part):
-        url = f'https://32.autopiter.ru/api/searchdetails?detailNumber={part.number}'
+        url = f'https://autopiter.ru/api/api/searchdetails?detailNumber={part.number}'
         r = self.request(url)
         if r is None:
             return None
         return r.text
 
     def _get_cost_html(self, article_id):
-        url = f'https://32.autopiter.ru/api/appraise?id={article_id}&searchType=1'
+        url = f'https://autopiter.ru/api/api/appraise/getcosts?idArticles={article_id}&searchType=1'        
         r = self.request(url)
         if r is None:
-            return None
+            return None        
         return r.text
 
     @staticmethod
@@ -92,7 +95,7 @@ class Autopiter(part_parser.PartParser):
         return model.capitalize()
 
     @staticmethod
-    def _parse_cost(cost_html, article_id):
+    def _parse_cost(cost_html, article_id):        
         try:
             json_response = json.loads(cost_html)
         except json.decoder.JSONDecodeError:
@@ -105,7 +108,7 @@ class Autopiter(part_parser.PartParser):
 
         stores = json_response['data']
         costs = Autopiter._get_unique_costs_from_stores(stores, article_id)
-        sorted_costs = sorted(costs)
+        sorted_costs = sorted(costs)        
 
         if len(sorted_costs) == 0:
             return None
@@ -118,8 +121,8 @@ class Autopiter(part_parser.PartParser):
 
     @staticmethod
     def _get_costs_from_stores(stores, article_id):
-        return [store['price'] for store in stores
-                if 'price' in store and 'articleId' in store and store['articleId'] == article_id]
+        return [store['originalPrice'] for store in stores
+                if 'originalPrice' in store and 'id' in store and store['id'] == article_id]
 
     @staticmethod
     def get_headers():

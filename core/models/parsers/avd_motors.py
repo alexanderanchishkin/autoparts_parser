@@ -7,92 +7,43 @@ from core.models.base.parser import get_parse_part_parser as parser
 
 class AvdMotors(parser.GetParsePartParser):
     def get_part_html(self, part):
-        url = f'https://www.avdmotors.ru/price/?number=' \
-              f'{part.number.split("#")[0]}&catalog={AvdMotors.prepare_model(part.model)}'
-        url2 = f'https://www.avdmotors.ru/price/clones'
+        url = f'https://www.avdmotors.ru/api/items/{part.number.split("#")[0]}'
         r = self.request(url, method='POST')
         if r is None:
             return None
-        r1 = self.request(url2, method='POST')
-        if r1 is None:
+        if r.status_code == 500:
             return None
-        return r.text + '!^^!' + r1.text
+        return r.text
 
     @staticmethod
     def parse_html(html, part):
-        response1, response2 = html.split('!^^!')
-        try:
-            json_response = json.loads(response1)
-        except json.decoder.JSONDecodeError:
-            return AvdMotors._handle_error(part, response1)
-
-        if 'data' not in json_response:
-            print('not data')
-            return part.not_found()
-
-        prices = json_response['data']
-        if isinstance(prices, dict):
-            prices = list(prices.values())
-
-        if not prices:
-            print('not prices')
-            return part.not_found()
-
-        min_price = prices[0].get('price', None)
-        min_title = prices[0].get('item_name', part.number)
-
-        if len(prices) > 1:
-            min_price2 = prices[1].get('price', None)
-            min_title2 = prices[1].get('item_name', part.number)
-        else:
-            min_price2 = int(1e+6)
-            min_title2 = min_title
-
-        if min_price is None or min_price2 is None:
-            print('not min_price')
-            return part.not_found()
+        response = html
 
         try:
-            json_response = json.loads(response2)
-            clones = json_response['data']
+            json_response = json.loads(response)
         except json.decoder.JSONDecodeError:
-            return AvdMotors._handle_error(part)
+            return AvdMotors._handle_error(part, response)
 
-        if clones:
-            articles = clones[0]
-            if isinstance(articles, dict):
-                articles = list(articles.values())
-            for prices in articles:
-                if isinstance(prices, dict):
-                    prices = list(prices.values())
-                current_min_price = prices[0]['price']
-                current_min_title = prices[0].get('item_name', part.number)
-                current_min_price2 = prices[1]['price']
-                current_min_title2 = prices[1].get('item_name', part.number)
+        if not json_response:
+            print('no data')
+            return part.not_found()
 
-                if current_min_price > min_price2:
-                    continue
-                if current_min_price < min_price:
-                    min_price2 = min_price
-                    min_title2 = min_title
-                    min_price = current_min_price
-                    min_title = current_min_title
+        for part_info in json_response:
+            catalog_info = part_info.get('catalog', None)
+            if catalog_info is None:
+                continue
+            model = catalog_info.get('name', None)
+            if model is None or model != AvdMotors.prepare_model(part.model):
+                continue
 
-                    if current_min_price2 < min_price2:
-                        min_price2 = current_min_price2
-                        min_title2 = current_min_title2
-                    continue
-                if min_price < current_min_price < min_price2:
-                    min_price2 = current_min_price
-                    min_title2 = current_min_title
-                    continue
+            price = part_info.get('price', None)
+            title = part_info.get('name', part.number)
 
-        if min_price2 > int(1e+6) - 1:
-            min_price2 = min_price
-            min_title2 = min_title
+            ready_part = part_.Part(part.number, part.model, title, price)
+            return ready_part
 
-        ready_part = part_.Part(part.number, part.model, min_title2, min_price2)
-        return ready_part
+        print('no part_info')
+        return part.not_found()
 
     @staticmethod
     def prepare_model(model: str):
@@ -107,6 +58,8 @@ class AvdMotors(parser.GetParsePartParser):
             return 'HYUNDAI/KIA'
         if 'PEUGEOT' in up_model or 'CITROEN' in up_model:
             return 'PEUGEOT / CITROEN'
+        if 'HELLA' in up_model:
+            return 'BEHR-HELLA'
         return up_model
 
     @staticmethod

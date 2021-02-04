@@ -4,6 +4,8 @@ import os
 import requests
 import stringcase
 
+from threading import Lock
+
 from config import settings
 from core.io.database.utilities import part as part_db
 from core.io.xlsx import part as part_xlsx
@@ -44,6 +46,8 @@ class Parser(abc.ABC):
         self.total = 0
 
         self.session = requests.Session() if self.USE_SESSION else None
+        self.mutex = Lock()
+        self.proxy_was = {}        
 
     @stopwatch.time('Parser')
     def execute(self, iter_parts, count):
@@ -90,7 +94,7 @@ class Parser(abc.ABC):
             headers = self.get_headers()
 
         use_proxy = use_proxy if use_proxy is not None else self.USE_PROXY
-        client = self.session if self.session is not None else requests
+        client = self.session if self.session is not None else requests        
 
         attempts_count = 0
         while True:
@@ -102,7 +106,9 @@ class Parser(abc.ABC):
 
             if use_proxy:
                 if proxies is None:
-                    proxies = self.get_next_proxies()
+                    self.mutex.acquire()
+                    proxies = self.get_next_proxies()                    
+                    self.mutex.release()
                 params['proxies'] = proxies
 
             if data is not None:
@@ -110,15 +116,28 @@ class Parser(abc.ABC):
             if json_data is not None:
                 params['json_data'] = json_data
 
-            try:
-                r = client.request(method, url, **params)
+            try:                           
+                r = client.request(method, url, **params)                
 
-                if not retry or r.status_code == 200:
+                if not retry or r.status_code == 200:                                                            
+                    if attempts_count > 0:
+                        print(f'Attempts count: {attempts_count}')
                     return r
             except requests.exceptions.ConnectTimeout:
                 print('Connection timeout')
-                import traceback
-                traceback.print_exc()
+                # import traceback
+                # traceback.print_exc()
+                pass
+            except requests.exceptions.ProxyError as e:
+                print('Proxy error')    
+                self.mutex.acquire()                
+                self.proxy_was[str(proxies)] = False
+                print(f'proxy_was: {len(self.proxy_was)}')
+                self.mutex.release()                
+                # print(proxies)
+                # print(e)
+                # import traceback
+                # traceback.print_exc()
                 pass
             except requests.exceptions.ConnectionError:
                 print('Connection error')
@@ -127,18 +146,27 @@ class Parser(abc.ABC):
                 pass
             except requests.exceptions.ReadTimeout:
                 print('Timeout')
-                import traceback
-                traceback.print_exc()
+                # import traceback
+                # traceback.print_exc()
                 pass
 
             attempts_count += 1
+            proxies = None
 
             if attempts_count == attempts:
+                print('Attemps error')
                 return None
 
-    def get_next_proxies(self):
-        proxy = proxy_.prepare_proxy(self.proxies[self.proxy_index])
+    def get_next_proxies(self):        
+        proxy = proxy_.prepare_proxy(self.proxies[self.proxy_index])      
         self.proxy_index = (self.proxy_index + 1) % len(self.proxies)
+        attempts = 0
+        
+        while not self.proxy_was.get(str(proxy), True) and attempts < 10:                       
+            proxy = proxy_.prepare_proxy(self.proxies[self.proxy_index])      
+            self.proxy_index = (self.proxy_index + 1) % len(self.proxies)
+            attempts += 1
+            
         return proxy
 
     def print_progress(self):
@@ -158,7 +186,7 @@ class Parser(abc.ABC):
 
     @staticmethod
     def get_headers():
-        return {}
+        return {'User-Agent': 'Chrome'}
 
     @staticmethod
     def prepare_model(model):

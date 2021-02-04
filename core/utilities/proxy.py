@@ -12,6 +12,6 @@ def load():
 
 def prepare_proxy(proxy):
     return {
-          "http": f'http://{proxy}',
-          "https": f'https://{proxy}',
+          "http": f'{proxy}',
+          "https": f'{proxy}',
     }
