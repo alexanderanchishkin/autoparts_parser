@@ -50,7 +50,7 @@ def _init():
 def load_parsers():
     return [
         # armtek.Armtek(), -- unused
-        autodoc.Autodoc()
+        autodoc.Autodoc(),
         autopiter.Autopiter(),
         avd_motors.AvdMotors(),
         froza.Froza(),
