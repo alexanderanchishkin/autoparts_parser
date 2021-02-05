@@ -77,7 +77,7 @@ class Autodoc(parser.GetParsePartParser):
         if 'AC' in up_model and 'DELCO' in up_model:
             return 'AC DELCO'
         if 'MERCEDE' in up_model:
-            return 'MERCEDES-BENZ'
+            return 'MERCEDES BENZ'
         if 'GM' in up_model:
             return 'GENERAL MOTORS'
         if 'HYUNDAI' in up_model or 'KIA' in up_model:
