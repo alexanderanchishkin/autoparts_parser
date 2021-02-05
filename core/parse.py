@@ -51,11 +51,11 @@ def load_parsers():
     return [
         # armtek.Armtek(), -- unused
         autodoc.Autodoc()
-        # autopiter.Autopiter(),
-        # avd_motors.AvdMotors(),
-        # froza.Froza(),
+        autopiter.Autopiter(),
+        avd_motors.AvdMotors(),
+        froza.Froza(),
         # mparts.Mparts(), -- unused
-        # parterra.Parterra()
+        parterra.Parterra()
     ]
 
 
