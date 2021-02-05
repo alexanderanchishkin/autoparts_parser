@@ -6,9 +6,11 @@ from core.models.base.parser import get_parse_part_parser as parser
 
 
 class Autodoc(parser.GetParsePartParser):
+    USE_PROXY = False
+
     def get_part_html(self, part):
         url = f'https://webapi.autodoc.ru/api/manufacturers/{part.number.split("#")[0]}/?showAll=true'
-        r = self.request(url, method='POST')
+        r = self.request(url, method='GET')
         if r is None:
             return None
         if r.status_code == 500:
@@ -21,8 +23,11 @@ class Autodoc(parser.GetParsePartParser):
             traceback.print_exc()
             return None
 
+        if manufacturer_id is None:
+            return None
+
         url2 = f'https://webapi.autodoc.ru/api/spareparts/{manufacturer_id}/{part.number.split("#")[0]}/null?isrecross=false'
-        r = self.request(url2, method='POST')
+        r = self.request(url2, method='GET')
         if r is None:
             return None
         if r.status_code == 500:
@@ -32,7 +37,7 @@ class Autodoc(parser.GetParsePartParser):
 
     def find_model(self, model, manufactures):
         for manufacturer in manufactures:
-            if model == manufacturer['manufactorerName']:
+            if self.prepare_model(model) == manufacturer.get('manufacturerName', None):
                 return manufacturer['id']
         return None
 
@@ -45,8 +50,8 @@ class Autodoc(parser.GetParsePartParser):
         except json.decoder.JSONDecodeError:
             return Autodoc._handle_error(part, response)
 
-        name = json_response['name']
-        items = json_response['inventoryItems']
+        name = json_response.get('name', None)
+        items = json_response.get('inventoryItems', None)
 
         if not json_response or not items:
             print('no data')
@@ -64,6 +69,11 @@ class Autodoc(parser.GetParsePartParser):
     @staticmethod
     def prepare_model(model: str):
         up_model = model.upper()
+
+        if 'BMW' in up_model:
+            return 'BMW/MINI/RR'
+        if 'NTN' in up_model or 'SNR' in up_model:
+            return 'NTN-SNR'
         if 'AC' in up_model and 'DELCO' in up_model:
             return 'AC DELCO'
         if 'MERCEDE' in up_model:

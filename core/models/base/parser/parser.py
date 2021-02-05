@@ -117,12 +117,13 @@ class Parser(abc.ABC):
                 params['json_data'] = json_data
 
             try:                           
-                r = client.request(method, url, **params)                
+                r = client.request(method, url, **params)
 
                 if not retry or r.status_code == 200:                                                            
                     if attempts_count > 0:
                         print(f'Attempts count: {attempts_count}')
                     return r
+
             except requests.exceptions.ConnectTimeout:
                 print('Connection timeout')
                 # import traceback
@@ -154,7 +155,7 @@ class Parser(abc.ABC):
             proxies = None
 
             if attempts_count == attempts:
-                print('Attemps error')
+                print('Attempts error')
                 return None
 
     def get_next_proxies(self):        

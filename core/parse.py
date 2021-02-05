@@ -5,6 +5,7 @@ from core.io.xlsx import part as part_xlsx
 from core.io.xlsx import merge as merge_xlsx
 from core.io.database.utilities import table as table_db
 from core.models.parsers import armtek
+from core.models.parsers import autodoc
 from core.models.parsers import autopiter
 from core.models.parsers import avd_motors
 from core.models.parsers import froza
@@ -49,11 +50,12 @@ def _init():
 def load_parsers():
     return [
         # armtek.Armtek(), -- unused
-        autopiter.Autopiter(),
-        avd_motors.AvdMotors(),
-        froza.Froza(),
+        autodoc.Autodoc()
+        # autopiter.Autopiter(),
+        # avd_motors.AvdMotors(),
+        # froza.Froza(),
         # mparts.Mparts(), -- unused
-        parterra.Parterra()
+        # parterra.Parterra()
     ]
 
 
